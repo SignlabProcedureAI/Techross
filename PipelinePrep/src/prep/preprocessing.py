@@ -1,16 +1,13 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
+# basic
 import numpy as np
 import pandas as pd
+
+# time
 from datetime import datetime
 
-# Moduel 
-from data.select_dataset_fluid import get_dataframe_from_database_fluid
-from data.load_database import load_database
+# module.dataline
+from prep_dataline.select_dataset import get_dataframe_from_database
+from prep_dataline.load_database import load_database
 
 def preprocess_data(data):
     
@@ -36,8 +33,6 @@ def preprocess_data(data):
     return organized_data
 
 
-# In[4]:
-
 
 def select_col_based_optype(data):
     # optype 추출
@@ -53,8 +48,6 @@ def select_col_based_optype(data):
     return data
 
 
-# In[5]:
-
 
 def organize_data(data):
     # 순위 정렬
@@ -65,8 +58,6 @@ def organize_data(data):
     
     return data
 
-
-# In[6]:
 
 
 def drop_duplicate_values(data):
@@ -109,8 +100,6 @@ def drop_duplicate_values(data):
     return sensor_no_duplicates, indicator_data, duplication_text, dulication_len
 
 
-# In[7]:
-
 
 def remove_missing_values(df, indicator_data):
     
@@ -152,7 +141,6 @@ def remove_missing_values(df, indicator_data):
     return remove_null_df, indicator_data, missing_values_text, null_len
 
 
-# In[8]:
 
 
 def remove_negative_values(data):
@@ -169,7 +157,6 @@ def remove_negative_values(data):
     # print('\n')
 
 
-# In[9]:
 
 
 def remove_previous_operating_time(data, indicator_data):
@@ -203,8 +190,6 @@ def remove_previous_operating_time(data, indicator_data):
         
     return data, indicator_data, operation_values_text, len(drop_index_original)
 
-
-# In[22]:
 
 
 def remove_quantile_outliers(data,indicator_data,col): 
@@ -317,8 +302,6 @@ def remove_quantile_outliers(data,indicator_data,col):
     return remove_outlier,indicator_data, operation_values_text, (source_data-remove_data)
 
 
-# In[11]:
-
 
 def apply_remove_outliers(data,indicator_data):
     
@@ -345,7 +328,6 @@ def apply_remove_outliers(data,indicator_data):
     return data, indicator_data, text_dict, noise_sum
 
 
-# In[12]:
 
 
 def apply_preprocessing_fuction(ship_id, op_index, section, data):
@@ -404,7 +386,6 @@ def apply_preprocessing_fuction(ship_id, op_index, section, data):
     return sensor, organized_data, indicator_df, data_preprocessed, text_dict
 
 
-# In[13]:
 def generate_supplementary_explanation_text(duplication_text, missing_values_text, operation_values_text, text_list, indicator_df):
     
     text_dict ={}
@@ -437,7 +418,6 @@ def generate_supplementary_explanation_text(duplication_text, missing_values_tex
     return text_dict
 
 
-# In[15]:
 
 
 def process_preprocessed_list(indicator_data, source_len, pre_len): 
@@ -476,7 +456,6 @@ def process_preprocessed_list(indicator_data, source_len, pre_len):
     return indicator_dict
 
 
-# In[16]:
 
 
 def generate_noise_col(indicator_data,indicator_dict):
@@ -502,8 +481,6 @@ def generate_noise_col(indicator_data,indicator_dict):
     return indicator_dict
 
 
-# In[17]:
-
 
 def generate_missing_col(indicator_data,indicator_dict):
     
@@ -515,8 +492,6 @@ def generate_missing_col(indicator_data,indicator_dict):
     return indicator_dict
 
 
-# In[18]:
-
 
 def generate_duplication_col(indicator_data,indicator_dict):
     
@@ -527,8 +502,6 @@ def generate_duplication_col(indicator_data,indicator_dict):
     
     return indicator_dict
 
-
-# In[19]:
 
 
 def generate_operation_time_col(indicator_data,indicator_dict):
@@ -549,4 +522,4 @@ def generate_preprocessing_count_dataframe(duplication_len, missing_len, operati
     
     return count_df
     # print(count_dict)
-    # load_database(count_df,'tc_data_preprocessed')
+    # load_database()

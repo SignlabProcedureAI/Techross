@@ -1,44 +1,29 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
+# path
 import sys
 import os
 
 # 경로 설정: 스크립트 경로에서 상위 디렉토리로 이동한 후 src 경로 추가
-health_data_path = os.path.abspath(os.path.join('..', 'src'))
-health_learning_data_path = os.path.abspath(os.path.join(os.getcwd(), "../../health_learning_data/health_data/src"))
-preprocessing_path = os.path.abspath(os.path.join(os.getcwd(), "../../preprocessing/src"))
+# health_data_path = os.path.abspath(os.path.join('..', 'src'))
+# health_learning_data_path = os.path.abspath(os.path.join(os.getcwd(), "../../health_learning_data/health_data/src"))
+# preprocessing_path = os.path.abspath(os.path.join(os.getcwd(), "../../preprocessing/src"))
 
-paths = [health_data_path, health_learning_data_path, preprocessing_path]
+# paths = [health_data_path, health_learning_data_path, preprocessing_path]
 
-def add_paths(paths):
-    """
-    지정된 경로들이 sys.path에 없으면 추가하는 함수.
+# def add_paths(paths):
+#     """
+#     지정된 경로들이 sys.path에 없으면 추가하는 함수.
     
-    Parameters:
-    - paths (list): 추가하려는 경로들의 리스트.
-    """
-    for path in paths:
-        if path not in sys.path:
-            sys.path.append(path)
-            print(f"Path added: {path}")
-        else:
-            print(f"Path already exists: {path}")
+#     Parameters:
+#     - paths (list): 추가하려는 경로들의 리스트.
+#     """
+#     for path in paths:
+#         if path not in sys.path:
+#             sys.path.append(path)
+#             print(f"Path added: {path}")
+#         else:
+#             print(f"Path already exists: {path}")
             
-add_paths(paths)
-
-# module.algorithms
-from preprocessing.preprocessing import apply_preprocessing_fuction
-from visualization import visualize as visual
-
-# module.data
-from data.select_dataset_fluid import get_dataframe_from_database_fluid as get_dataframe
-from data.select_dataset  import get_dataframe_from_database
-from data.select_dataset_optime import get_dataframe_from_database_optime
-from data.load_database import load_database
-from my_package.data.logger_confg import logger
+# add_paths(paths)
 
 # basic
 import json
@@ -46,15 +31,20 @@ import pandas as pd
 from datetime import datetime
 import time
 
-# In[8]:
+
+# module
+from prep.preprocessing import apply_preprocessing_fuction
+from prep_visualizer import visualize as visual
+
+# module.dataline
+from prep_dataline.select_dataset  import get_dataframe_from_database
+from prep_dataline.select_dataset_optime import get_dataframe_from_database_optime
+from prep_dataline.load_database import load_database
+from stat_dataline.logger_confg import logger
+
 
 
 # Goals: 데이터 로드
-
-
-# In[3]:
-
-
 def select_data_variable(original_data, data):
     # drop_col = ['vessel','tons','tons_category']
     
@@ -67,12 +57,11 @@ def select_data_variable(original_data, data):
     return original_data,data
 
 
-# In[4]:
-
-
-# Goals: 데이터 추출 후 변수 적용
 
 # def distribute_variables(ship_id, op_index, section):
+    """ 데이터 추출 후 변수 적용
+    """
+    
     
 #     # 데이터 베이스 등록 데이터 추출
 #     # get_data = get_dataframe('tc_data_preprocessing',ship_id, op_index, section) 
@@ -111,7 +100,7 @@ def process_preprocessed_data(indicator_data, preprocessed_data):
     concat = concat[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','NOISE','MISSING','DUPLICATE','OPERATION','DATA_COUNT','PRE_COUNT','START_DATE','END_DATE','REG_DATE']]
 
     # 데이터 적재
-    load_database(concat,'tc_data_preprocessing')
+    # load_database('signlab', 'tc_data_preprocessing', concat)
     
 
 def time_decorator(func): 
@@ -127,8 +116,8 @@ def time_decorator(func):
 def distribute_by_application(ship_id, op_index, section):
 
     # 데이터 로드
-    df = get_dataframe_from_database('ecs_data', ship_id = ship_id, op_index = op_index, section = section)
-    optime = get_dataframe_from_database_optime('ecs_optime',ship_id,op_index)
+    df = get_dataframe_from_database('ecs_dat1','ecs_data', ship_id = ship_id, op_index = op_index, section = section)
+    optime = get_dataframe_from_database_optime('ecs_dat1','ecs_optime', ship_id, op_index)
 
     df = df[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','TRO','ANU','RATE','CURRENT','VOLTAGE']]
     optime = optime[['SHIP_ID','OP_INDEX','OP_TYPE','START_TIME','END_TIME','RUNNING_TIME']]
@@ -193,7 +182,7 @@ def distribute_by_application(ship_id, op_index, section):
                 # 실시간 데이터 적재
                 data_col = ['SHIP_ID','OP_INDEX','SECTION','DATA_INDEX']
                 result_data = data[data_col]
-                load_database(result_data,'tc_data_preprocessing_result')
+                # load_database('signlab', 'tc_data_preprocessing_result', result_data)
 
                 return original_data, data
             

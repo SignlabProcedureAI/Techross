@@ -103,7 +103,7 @@ def apply_system_health_statistics_with_fts(data):
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    # load_database('ecs_test','tc_ai_fts_system_health_group', group)
+    load_database('ecs_test','tc_ai_fts_system_health_group_v0.0.0', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME']]
@@ -114,7 +114,7 @@ def apply_system_health_statistics_with_fts(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    # load_database('signlab','tc_ai_fts_model_system_health_group', group)
+    load_database('ecs_test','tc_ai_fts_model_system_health_group_v0.0.0', group)
     
     return group
 
@@ -198,11 +198,6 @@ def calculate_group_health_score(data,col):
     return [ 100 if total_score + limit_score >= 100 else total_score + limit_score], trend_score
 
 
-# In[122]:
-
-
-# Action: 알고리즘 적용
-
 def apply_system_health_algorithms_with_fts(data):
     """ FTS 알고리즘 적용
     Args : 선박 이름, 오퍼레이션 번호, 섹션 번호
@@ -229,6 +224,7 @@ def apply_system_health_algorithms_with_fts(data):
     group = apply_system_health_statistics_with_fts(system_data_condition)
 
     return system_data_condition, group
+
 
 def load_model_from_pickle(file_path):
     """

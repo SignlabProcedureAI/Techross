@@ -13,10 +13,6 @@ def extract_rate_of_change_threshold(data):
     # 양의 변화율과 음의 변화율이 특정 임계값을 초과하는 지점을 찾습니다.
     positive_threshold = data['TRO_Ratio'].quantile(0.95)  # 상위 5%를 초과하는 변화율을 임계값으로 설정합니다.
     negative_threshold = data['TRO_Ratio'].quantile(0.05)  # 하위 5%를 초과하는 변화율을 임계값으로 설정합니다.
-    
-    #positive_threshold = data['TRO_Ratio']>=4  # 상위 5%를 초과하는 변화율을 임계값으로 설정합니다.
-    #negative_threshold = data['TRO_Ratio']<=-4  # 하위 5%를 초과하는 변화율을 임계값으로 설정합니다.
-    
 
     # 임계값을 초과하는 지점을 찾습니다.
     data['Peak'] = (data['TRO_Ratio'] > positive_threshold) & (data['TRO_Ratio']>=2)
@@ -35,11 +31,7 @@ def plot_hunting_threshold(data):
     plt.title('Signal with Change Rate Peaks and Valleys')
     plt.legend()
     plt.show()
-
-    # 변화율 임계값을 출력합니다.
-    #print("Positive Change Rate Threshold:", positive_threshold)
-    #print("Negative Change Rate Threshold:", negative_threshold)
-
+    
 
 # '헌팅' 라벨을 부여하는 함수를 정의합니다.
 def label_hunting_multiple_of_two(df):

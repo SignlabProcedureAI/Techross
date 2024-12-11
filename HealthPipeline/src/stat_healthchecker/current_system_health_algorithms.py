@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 # module.dataline
-from dataline.load_database import load_database
+from stat_dataline.load_database import load_database
 
 # set
 import warnings
@@ -61,13 +61,11 @@ def calculate_minus_value(data):
 
 
 
-
 def calculate_generalization_value(data):
     k = 0.23
     #data['GENERALIZATION_EFFICIENCY'] = (100*data['TRO'])/((1.323*data['CURRENT']) / data['FMU']) 
     data['GENERALIZATION_EFFICIENCY'] = (100*data['TRO'])/((1.323*data['CURRENT']) / data['FMU']) * (1 + k * (1 - data['CSU'] / 50))
     return data
-
 
 
 

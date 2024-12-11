@@ -38,54 +38,35 @@ def classify_time_offset_label(data):
     data['cross_correlation']=positive_cross_correlation[:len(current_normalized)]
     data['lag']=positive_lags[:len(current_normalized)]
     
+    # 임계 값 함수 적용
     data = apply_threshold(data)
     
+    # cross_correlation 변수 저장
     corrlat = data['cross_correlation'].values
 
+    # cross_correlation 활용 re_cross_correlation 추출 
     autocorr = correlate(corrlat, corrlat, mode='full')
     autocorr = autocorr[autocorr.size // 2:]
     
-    #data = check_signal(data)
+    # filter_repeating_extrema 활용 re_cross_correlation의 극대, 극소 주기 카운트
     result, count = filter_repeating_extrema(autocorr)
-    data = evaluate_time_offset(result,data)
+
+    # re_cross_corrlation 평가
+    data = evaluate_time_offset(result, data)
     
+    # 데이터 초기 시간 필터링
     data = limit_date_time(data)
     
+    # 변수 재정의 
     data = data.rename({'cross_correlation':'CROSS_CORRELATION','lag':'LAG'},axis=1)
 
+    # 변수 저장
     data['RE_CROSS_CORRELATION'] = autocorr
     
     return data, count
 
 
-def apply_thresholdb(data):
-    
-    cross_max=data['cross_correlation'].max()
-    
-    # 크로스 코릴레이션 값이 50 이상인 지점의 인덱스를 찾음
-    threshold = cross_max/2
-
-    positive_threshold = data['cross_correlation'].quantile(0.95)  # 상위 5%를 초과하는 변화율을 임계값으로 설정합니다.
-    
-    # TIME OFFSET 변수를 데이터 프레임에 추가하고 모든 값을 False로 초기화
-    data['TIME_OFFSET'] = 0
-
-    # 조정된 lags가 원래 데이터의 인덱스 범위 내에 있는지 확인하고,
-    # 해당 인덱스에 대해 TIME OFFSET 값을 True로 설정
-     # 임계값을 초과하는 지점을 찾습니다.
-    data['Peak'] = (data['cross_correlation'] > positive_threshold) & (data['cross_correlation']>=threshold)
-    
-    peaks_indices = data[data['Peak']].index
-    
-    
-    #data.loc[data['cross_correlation']>=threshold,'TIME_OFFSET']=1
-    
-    data.loc[peaks_indices,'TIME_OFFSET']=1
-        
-    return data
-
 def apply_threshold(data):
-    #data['cross_correlation'] = savgol_filter(data['cross_correlation'], window_length=51,polyorder=3)
     
     cross_correlation=data['cross_correlation']
     
@@ -97,13 +78,7 @@ def apply_threshold(data):
     
     # TIME OFFSET 변수를 데이터 프레임에 추가하고 모든 값을 False로 초기화
     data['TIME_OFFSET'] = 0
-    
-    #for peak_index in peaks:
-        #cross_correlation=data.at[peak_index,'cross_correlation']
-        #if (cross_correlation > threshold) & (abs(cross_correlation) > threshold):
-            #data.at[peak_index, 'TIME_OFFSET'] = 1
-            
-          
+
     for i in range(2,len(peaks),3):
         data.loc[peaks[i], 'TIME_OFFSET'] = 1
     
@@ -117,6 +92,7 @@ def filter_repeating_extrema(data, repeat_threshold=4):
     :param repeat_threshold: The minimum number of times extrema must repeat to be filtered.
     :return: Filtered data with repeating extrema sections removed.
     """
+
     # Find local maxima and minima
     lower_value = np.percentile(data, 20)
     upper_value = np.percentile(data, 80)
@@ -162,36 +138,14 @@ def evaluate_time_offset(result,data):
         data['TIME_OFFSET'] = 0
         return data
     
-
-
-def check_signal(data):
-    cross_correlation = data['cross_correlation']
-    
-    # 피크 찾기
-    peaks, _ = find_peaks(cross_correlation)
-    peak_heights = cross_correlation[peaks]
-
-    # 피크 간격의 표준편차 계산
-    peak_intervals = np.diff(peaks)
-    interval_std = np.std(peak_intervals)
-
-    # 주파수 분석 (푸리에 변환)
-    frequencies, power = periodogram(cross_correlation)
-    
-    # 가장 강한 주파수 성분 찾기
-    strongest_freq = frequencies[np.argmax(power)]
-    strongest_power = np.max(power)
-
-    if (strongest_power < 100000) :
-        data['TIME_OFFSET']=0
-
-    return data
     
 def limit_date_time(data):
     data.loc[data['DATA_INDEX'] < 30,'TIME_OFFSET'] = 0
     
     return data
 
+
+### 결과 시각화 함수
     
 def plot_cross_correlation(data):
     

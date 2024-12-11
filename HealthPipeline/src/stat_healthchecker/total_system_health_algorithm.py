@@ -1,4 +1,3 @@
-
 # basic
 import numpy as np
 import time
@@ -52,7 +51,7 @@ def apply_system_health_algorithms_with_total(data, ship_id, op_index, section):
     # criteria.to_csv(fr"C:\Users\pc021\Desktop\dx_project\techross\refrences\data_evaluation\health_data\{ship_id}_{op_index}_{section}.csv")
 
     # 그룹 적재
-    # load_database(signlab', 'tc_ai_total_system_health_group', group)
+    load_database('ecs_test', 'tc_ai_total_system_health_group_v0.0.0', criteria)
 
 
 def generate_tro_health_score(tro): 
@@ -77,6 +76,8 @@ def round_up_sensor_values(data, columns):
     return data
 
 def preprocess_system_health_algorithms_with_total(csu,sts,tro,fts,fmu,current):
+
+    print(f" CSU 데이터 프레임: {csu}")
     
     #  CSU 데이터를 기준으로 설정
     criteria = csu[['SHIP_ID','OP_INDEX','SECTION','DATA_INDEX','HEALTH_SCORE']]

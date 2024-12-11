@@ -50,10 +50,10 @@ def apply_system_health_learning_algorithms_with_total(data, ship_id, op_index, 
     current, current_group = current_algorithms.apply_system_health_algorithms_with_current(data)
     
     # 총 건강도 반환
-    #criteria = preprocess_system_health_algorithms_with_total(csu_group,sts_group,tro_group,fts_group,fmu_group,current_group)
+    # criteria = preprocess_system_health_algorithms_with_total(csu_group,sts_group,tro_group,fts_group,fmu_group,current_group)
     
     # 그룹 적재
-    # load_database('signlab', 'tc_ai_total_system_health_group', criteria)
+    # load_database('ecs_test', 'tc_ai_total_system_health_group_v0.0.0', criteria)
 
     #print(f"학습 데이터의 총 건강도 데이터 반환 : {criteria}")
 

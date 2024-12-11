@@ -41,49 +41,27 @@ def classify_time_offset_label(data):
     data['cross_correlation']=positive_cross_correlation[:len(current_normalized)]
     data['lag']=positive_lags[:len(current_normalized)]
 
-    # 자기상관 계수 추출 및 라벨링    
+    # 임계 값 함수 적용
     data=apply_threshold(data)
     
-    # 라벨 점검
-
-    # 자기상관 계수 추출 
+    # cross_correlation 변수 저장
     corrlat = data['cross_correlation'].values
+
+    # cross_correlation 활용 re_cross_correlation 추출 
     autocorr = correlate(corrlat, corrlat, mode='full')
     autocorr = autocorr[autocorr.size // 2:]
     
-    # 점검 함수 적용
+    # filter_repeating_extrema 활용 re_cross_correlation의 극대, 극소 주기 카운트
     result = filter_repeating_extrema(autocorr)
+
+    # re_cross_corrlation 평가
     data = evaluate_time_offset(result,data)
 
-    # 시작 30분 전 라벨 리셋
+    # 데이터 초기 시간 필터링
     data = limit_date_time(data)
     
     return data
 
-
-def apply_thresholdb(data):
-    
-    
-    cross_max=data['cross_correlation'].max()
-    
-    # 크로스 코릴레이션 값이 50 이상인 지점의 인덱스를 찾음
-    threshold = cross_max/2
-
-    positive_threshold = data['cross_correlation'].quantile(0.95)  # 상위 5%를 초과하는 변화율을 임계값으로 설정합니다.
-    
-    # TIME OFFSET 변수를 데이터 프레임에 추가하고 모든 값을 False로 초기화
-    data['TIME_OFFSET'] = 0
-
-    # 조정된 lags가 원래 데이터의 인덱스 범위 내에 있는지 확인하고,
-    # 해당 인덱스에 대해 TIME OFFSET 값을 True로 설정
-     # 임계값을 초과하는 지점을 찾습니다.
-    data['Peak'] = (data['cross_correlation'] > positive_threshold) & (data['cross_correlation']>=threshold)
-    
-    peaks_indices = data[data['Peak']].index
-    
-    data.loc[peaks_indices,'TIME_OFFSET']=1
-        
-    return data
 
 def apply_threshold(data):
     
@@ -161,7 +139,9 @@ def evaluate_time_offset(result,data):
         data['TIME_OFFSET'] = 0
         return data
     
-    
+
+### 시각화 함수
+
 def plot_cross_correlation(data):
     
     #변수 설정

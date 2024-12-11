@@ -35,8 +35,6 @@ def refine_frames(data):
     return data
 
 
-
-
 def apply_system_health_statistics_with_csu(data):
     """그룹 통계 함수 적용
     
@@ -88,7 +86,7 @@ def apply_system_health_statistics_with_csu(data):
 
     # 현재 파일의 경로를 기준으로 model 폴더 내 csu_model 경로 생성
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    csu_model_relative_path = os.path.join(current_dir,".." , "modelsmodel","csu_model")
+    csu_model_relative_path = os.path.join(current_dir,".." , "models_model","csu_model")
     # 상대 경로를 절대 경로로 변환
     csu_model_path = os.path.abspath(csu_model_relative_path)
 
@@ -101,7 +99,7 @@ def apply_system_health_statistics_with_csu(data):
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    # load_database('ecs_test','tc_ai_csu_system_health_group', group)
+    load_database('ecs_test','tc_ai_csu_system_health_group_v0.0.0', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME']]
@@ -112,7 +110,7 @@ def apply_system_health_statistics_with_csu(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    # load_database('signlab','tc_ai_csu_model_system_health_group', group)
+    load_database('ecs_test','tc_ai_csu_model_system_health_group_v0.0.0', group)
     
     return group
 
@@ -180,8 +178,6 @@ def calculate_group_health_score(data,col):
     
     return [ 100 if total_score + limit_score >= 100 else total_score + limit_score],trend_score
 
-
-# Golas: 알고리즘 적용
 
 def apply_system_health_algorithms_with_csu(data):
     """ CSU 건강도 알고리즘 적용 

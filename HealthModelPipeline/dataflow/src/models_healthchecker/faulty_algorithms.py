@@ -91,12 +91,12 @@ def apply_fault_label_statistics(data,count):
     
     # 데이터 그룹화
     group=data.groupby(['SHIP_ID','OP_INDEX','SECTION']).agg({'CSU':'mean','STS':'mean','FTS':'mean','FMU':'mean','CURRENT':
-                                                             'mean','TRO':['min','mean','max'],'TRO_DIFF':['min','mean','max'],'TRO_PRED':'mean','PEAK_VALLEY_INDICES':['min','mean','max'],'CROSS_CORRELATION':'mean','RE_CROSS_CORRELATION':'mean',
+                                                             'mean','TRO':['min','mean','max'],'TRO_DIFF':['min','mean','max'],'TRO_PRED':'mean','PEAK_VALLEY_INDICES':'sum','CROSS_CORRELATION':'mean','RE_CROSS_CORRELATION':'mean',
                                                        'PRED_DIFF':'mean','TRO_NEG_COUNT':'max','STEEP_LABEL':'sum','SLOWLY_LABEL':'sum','OUT_OF_WATER_STEEP':'sum','HUNTING':'sum','TIME_OFFSET':'sum'})
     
     # 다중 인덱스된 컬럼을 단일 레벨로 평탄화
     group.columns = ['_'.join(col) for col in group.columns]
-    group.columns = ['CSU','STS','FTS','FMU','CURRENT','TRO_MIN','TRO_MEAN','TRO_MAX','TRO_DIFF_MIN','TRO_DIFF_MEAN','TRO_DIFF_MAX','TRO_PRED','PEAK_VALLEY_INDICES_MIN','PEAK_VALLEY_INDICES_MEAN','PEAK_VALLEY_INDICES_MAX','CROSS_CORRELATION','RE_CROSS_CORRELATION','PRED_DIFF',
+    group.columns = ['CSU','STS','FTS','FMU','CURRENT','TRO_MIN','TRO_MEAN','TRO_MAX','TRO_DIFF_MIN','TRO_DIFF_MEAN','TRO_DIFF_MAX','TRO_PRED','PEAK_VALLEY_INDICES_SUM','CROSS_CORRELATION','RE_CROSS_CORRELATION','PRED_DIFF',
                      'TRO_NEG_COUNT','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET']
 
 
@@ -109,14 +109,14 @@ def apply_fault_label_statistics(data,count):
     group['OP_TYPE'] = op_type 
     group['RE_CROSS_CORRELATION_COUNT'] = count
     
-    group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','STS','FTS','FMU','CURRENT','TRO_MIN','TRO_MEAN','TRO_MAX','TRO_DIFF_MIN','TRO_DIFF_MEAN','TRO_DIFF_MAX','PEAK_VALLEY_INDICES_MIN','PEAK_VALLEY_INDICES_MEAN','PEAK_VALLEY_INDICES_MAX','CROSS_CORRELATION','RE_CROSS_CORRELATION','PRED_DIFF','RE_CROSS_CORRELATION_COUNT',
+    group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','STS','FTS','FMU','CURRENT','TRO_MIN','TRO_MEAN','TRO_MAX','TRO_DIFF_MIN','TRO_DIFF_MEAN','TRO_DIFF_MAX','PEAK_VALLEY_INDICES_SUM','CROSS_CORRELATION','RE_CROSS_CORRELATION','PRED_DIFF','RE_CROSS_CORRELATION_COUNT',
                      'TRO_NEG_COUNT','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET','START_TIME','END_TIME','RUNNING_TIME']]
     
     # 모델 로드
 
     # 현재 파일의 경로를 기준으로 model 폴더 내 tro_model 경로 생성
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    tro_model_relative_path = os.path.join(current_dir,".." , "models_model","tro_group_model")
+    tro_model_relative_path = os.path.join(current_dir,".." , "models_model","tro_group_model_v2.0.0")
     # 상대 경로를 절대 경로로 변환
     tro_model_path = os.path.abspath(tro_model_relative_path)
 
@@ -125,8 +125,7 @@ def apply_fault_label_statistics(data,count):
     # # 변수 선택 및 예측
     X = group[['CSU', 'STS', 'FTS', 'FMU', 'CURRENT', 'TRO_MIN', 'TRO_MEAN', 'TRO_MAX',
        'TRO_DIFF_MIN', 'TRO_DIFF_MEAN', 'TRO_DIFF_MAX', 'TRO_NEG_COUNT',
-       'PEAK_VALLEY_INDICES_MIN', 'PEAK_VALLEY_INDICES_MEAN',
-       'PEAK_VALLEY_INDICES_MAX', 'CROSS_CORRELATION', 'RE_CROSS_CORRELATION',
+       'PEAK_VALLEY_INDICES_SUM', 'CROSS_CORRELATION', 'RE_CROSS_CORRELATION',
        'RE_CROSS_CORRELATION_COUNT']]
     
     pred =  model.predict(X)
@@ -134,14 +133,14 @@ def apply_fault_label_statistics(data,count):
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    # load_database('ecs_test','tc_ai_fault_group', group)
+    load_database('ecs_test','tc_ai_fault_group_v0.0.0', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET','PRED','START_TIME','END_TIME','RUNNING_TIME']]
     group = catorize_health_score(group)
 
     # 데이터 적재
-    # load_database('signlab','tc_ai_fault_model_group', group)
+    load_database('ecs_test','tc_ai_fault_model_group_v0.0.0', group)
     
     return group
 
@@ -241,6 +240,7 @@ def apply_fault_algorithms(data):
     group = apply_fault_label_statistics(data, count)
 
     return data, group
+
 
 def load_model_from_pickle(file_path):
     """

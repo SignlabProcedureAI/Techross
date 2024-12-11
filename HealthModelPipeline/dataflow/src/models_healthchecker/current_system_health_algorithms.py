@@ -1,20 +1,11 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[36]:
-
 # basic
 import numpy as np
 import pandas as pd
 import os
 import pickle
 
-# In[37]:
-
 # module.dataline
 from models_dataline.load_database import load_database
-
-# In[38]:
 
 # set
 import warnings
@@ -39,7 +30,6 @@ def generate_bad_data(data,col,start_val,end_val):
     return data
 
 
-
 def merge_tons(data):   
     # 데이터 로드
     tons = pd.read_csv(r"C:\Users\pc021\Desktop\프로젝트\테크로스\모델 고도화\건강도 데이터\data\tons.csv")
@@ -53,7 +43,6 @@ def merge_tons(data):
     merge = pd.merge(data,tons,on=['SHIP_ID','SECTION'],how='left')
     
     return merge
-
 
 
 def catorize_health_score(data):
@@ -74,7 +63,6 @@ def refine_frames(data):
     
     return data
 
-
 def calculate_minus_value(data):
     
     data['ELECTRODE_EFFICIENCY'] =  - (100 - data['GENERALIZATION_EFFICIENCY'])
@@ -92,8 +80,6 @@ def calculate_generalization_value(data):
     return data
 
 
-
-# Goals: 그룹 통계 함수 적용
 def apply_system_health_statistics_with_current(data):
     """ CURRENT 그룹 알고리즘 적용
     """
@@ -144,7 +130,7 @@ def apply_system_health_statistics_with_current(data):
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    # load_database('ecs_test','tc_ai_electrode_group', group)
+    load_database('ecs_test','tc_ai_electrode_group_v0.0.0', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','ELECTRODE_EFFICIENCY','PRED','START_TIME','END_TIME','RUNNING_TIME']]
@@ -155,10 +141,9 @@ def apply_system_health_statistics_with_current(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    # load_database('signlab','tc_ai_electrode_model_group', group)
+    load_database('ecs_test','tc_ai_electrode_model_group_v0.0.0', group)
 
     return group
-
 
 
 def apply_system_health_algorithms_with_current(data):

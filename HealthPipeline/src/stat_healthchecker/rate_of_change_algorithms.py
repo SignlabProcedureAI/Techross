@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
+# basic
 import pickle
 import numpy as np
 import pandas as pd
@@ -36,7 +32,6 @@ def load_pickle(file_path):
         return None
   
 
-# Version A/B
 def calculating_rate_change_std(df, column, std):
     """
     CSU std: 1.78
@@ -91,12 +86,10 @@ def calculating_rate_change(df, column):
 
     return df
 
-# In[ ]:
-
-
-# Goals: 음수 카운트를 저장할 새로운 열을 초기화합니다.
 
 def generate_tro_neg_count(abnormal):
+    """ 음수 카운트를 저장할 새로운 열을 초기화합니다.
+    """
     
     abnormal['TRO_NEG_COUNT'] = 0
     negative_count = 0

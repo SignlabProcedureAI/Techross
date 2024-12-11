@@ -124,7 +124,7 @@ def distribute_by_application(ship_id, op_index, section):
     date_time = optime.iloc[0]['START_TIME']
 
     if optime.empty:
-        logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=OP_TIME DATAFRAME 비어있습니다. | TYPE=PREPROCESSING | is_processed=False')
+        logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=op_time dataframe is empty| TYPE=preprocessing | IS_PROCESSED=False')
         print("optime DataFrame 비어있습니다.")
         return None, None
 
@@ -191,5 +191,5 @@ def distribute_by_application(ship_id, op_index, section):
             return sensor, None  
         
     else:
-        logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=해당 OP_TIME은 DEBALLAST입니다. | TYPE=PREPROCESSING | is_processed=False')
+        logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False')
         return None, None

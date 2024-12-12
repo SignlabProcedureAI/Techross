@@ -1,7 +1,0 @@
-
-# 특정 파일 무시
-.ipynb_checkpoints
-__pycache__
-models_model/
-stat_model/
-.gitignore

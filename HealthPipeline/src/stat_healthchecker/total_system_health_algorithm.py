@@ -75,9 +75,7 @@ def round_up_sensor_values(data, columns):
 
     return data
 
-def preprocess_system_health_algorithms_with_total(csu,sts,tro,fts,fmu,current):
-
-    print(f" CSU 데이터 프레임: {csu}")
+def preprocess_system_health_algorithms_with_total(csu,sts,tro,fts,fmu,current)
     
     #  CSU 데이터를 기준으로 설정
     criteria = csu[['SHIP_ID','OP_INDEX','SECTION','DATA_INDEX','HEALTH_SCORE']]

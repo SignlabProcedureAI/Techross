@@ -9,12 +9,11 @@ def get_dataframe_from_database_optime(database, ship_id, op_index):
     # 테이블 정보 설정
     table_name = 'ecs_optime'
 
-    # 연결 정보 설정
-    username = 'bwms_dba'  # 사용자 이름
-    password = '!^admin1234^!'  # 비밀번호
-    host = 'signlab.iptime.org'  # 서버 주소
-    port = 20002  # 포트
-    # database = 'ecs_test'  # 데이터베이스 이름
+    username = 'signlab'
+    password = ''
+    host = '172.16.18.11'  # 또는 서버의 IP 주소
+    port = 3306 # MariaDB의 기본 포트
+ 
 
     # SQLAlchemy 엔진 생성
     engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')

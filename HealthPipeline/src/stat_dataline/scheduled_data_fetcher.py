@@ -10,12 +10,11 @@ from sqlalchemy import create_engine
 
 def fetch_data_on_schedule(database, table_name):
     
-    # 연결 정보 설정
-    username = 'bwms_dba'  # 사용자 이름
-    password = '!^admin1234^!'  # 비밀번호
-    host = 'signlab.iptime.org'  # 서버 주소
-    port = 20002  # 포트
-    # database = 'signlab'  # 데이터베이스 이름
+    username = 'signlab'
+    password = ''
+    host = '172.16.18.11'  # 또는 서버의 IP 주소
+    port = 3306 # MariaDB의 기본 포트
+ 
 
     # SQLAlchemy 엔진 생성
     engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')

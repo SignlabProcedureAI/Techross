@@ -9,11 +9,12 @@ def load_database(database, table_name, data):
 
     # MariaDB 연결을 설정합니다.
     # 'username', 'password', 'host', 'port', 'database'를 실제 값으로 대체하세요.
-    username = 'bwms_dba'
-    password = '!^admin1234^!'
-    host = 'signlab.iptime.org'  # 또는 서버의 IP 주소
-    port = 20002  # MariaDB의 기본 포트
-    # database = 'signlab'
+    
+    username = 'signlab'
+    password = ''
+    host = '172.16.18.11'  # 또는 서버의 IP 주소
+    port = 3306 # MariaDB의 기본 포트
+ 
     engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')
 
     # 데이터 타입 매핑을 위한 딕셔너리 생성

@@ -11,7 +11,7 @@ def get_dataframe_from_database(database, table_name, all=False, **kwargs):
     section = kwargs.get('section')
     
     username = 'signlab'
-    password = ''
+    password = 'signlab123'
     host = '172.16.18.11'  # 또는 서버의 IP 주소
     port = 3306 # MariaDB의 기본 포트
  

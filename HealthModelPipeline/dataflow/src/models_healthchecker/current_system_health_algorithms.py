@@ -130,7 +130,7 @@ def apply_system_health_statistics_with_current(data):
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    load_database('ecs_test','tc_ai_electrode_group_v0.0.0', group)
+    load_database('test','tc_ai_mclr_electrode_group', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','ELECTRODE_EFFICIENCY','PRED','START_TIME','END_TIME','RUNNING_TIME']]
@@ -141,7 +141,7 @@ def apply_system_health_statistics_with_current(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    load_database('ecs_test','tc_ai_electrode_model_group_v0.0.0', group)
+    load_database('test','tc_ai_electrode_model_group', group)
 
     return group
 

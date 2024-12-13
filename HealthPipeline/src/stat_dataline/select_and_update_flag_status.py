@@ -1,3 +1,9 @@
+# basic
+import pandas as pd
+
+# database
+from sqlalchemy import create_engine
+
 def get_and_update_flag_status():
     """
     Retrieve the flag status data from the database, filter it based on conditions,
@@ -7,9 +13,12 @@ def get_and_update_flag_status():
         pd.DataFrame: The filtered data before updating the FLAG column.
     """
     username = 'signlab'
-    password = ''
+    password = 'signlab123'
     host = '172.16.18.11'  # 또는 서버의 IP 주소
     port = 3306 # MariaDB의 기본 포트
+
+    database = 'signlab'
+    table_name = 'tc_flag_status'
 
     # SQLAlchemy 엔진 생성
     engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')
@@ -21,6 +30,7 @@ def get_and_update_flag_status():
     
     # Pandas를 사용하여 데이터 프레임으로 로드
     df = pd.read_sql(query, engine)
+    
     if df.empty:
         print("No data matching the conditions.")
         return None
@@ -38,5 +48,5 @@ def get_and_update_flag_status():
 
     print("FLAG updated to 1 for the filtered data.")
 
-    return filtered_df
+    return df
 

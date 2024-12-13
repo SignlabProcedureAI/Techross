@@ -10,7 +10,7 @@ def get_dataframe_from_database_optime(database, ship_id, op_index):
     table_name = 'ecs_optime'
 
     username = 'signlab'
-    password = ''
+    password = 'signlab123'
     host = '172.16.18.11'  # 또는 서버의 IP 주소
     port = 3306 # MariaDB의 기본 포트
  

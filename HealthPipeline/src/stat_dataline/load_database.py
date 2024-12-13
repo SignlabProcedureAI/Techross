@@ -11,7 +11,7 @@ def load_database(database, table_name, data):
     # 'username', 'password', 'host', 'port', 'database'를 실제 값으로 대체하세요.
 
     username = 'signlab'
-    password = ''
+    password = 'signlab123'
     host = '172.16.18.11'  # 또는 서버의 IP 주소
     port = 3306 # MariaDB의 기본 포트
  

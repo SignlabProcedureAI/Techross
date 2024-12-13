@@ -11,7 +11,7 @@ def get_dataframe_from_database_optime(database, table_name, ship_id, op_index):
     # 연결 정보 설정
 
     username = 'signlab'
-    password = ''
+    password = 'signlab123'
     host = '172.16.18.11'  # 또는 서버의 IP 주소
     port = 3306 # MariaDB의 기본 포트
  

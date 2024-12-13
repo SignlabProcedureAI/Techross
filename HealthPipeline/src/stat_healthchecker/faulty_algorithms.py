@@ -99,7 +99,7 @@ def apply_fault_label_statistics(data):
     group = group[['SHIP_ID','OP_INDEX','SECTION','RUNNING_TIME','OP_TYPE','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET','START_TIME','END_TIME']]
 
     # 데이터 적재
-    # load_database('signlab', 'tc_ai_fault_group', group)
+    load_database('test', 'tc_ai_fault_group', group)
     
     return group
 
@@ -198,6 +198,6 @@ def apply_fault_algorithms(data):
     sensor_data = data[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET']]
 
     # 8. 자동 적재
-    # load_database('signlab', 'tc_ai_fault_label', sensor_data)
+    load_database('test', 'tc_ai_fault_label', sensor_data)
 
     return sensor_data, group

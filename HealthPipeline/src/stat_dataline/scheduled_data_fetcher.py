@@ -11,7 +11,7 @@ from sqlalchemy import create_engine
 def fetch_data_on_schedule(database, table_name):
     
     username = 'signlab'
-    password = ''
+    password = 'signlab123'
     host = '172.16.18.11'  # 또는 서버의 IP 주소
     port = 3306 # MariaDB의 기본 포트
  

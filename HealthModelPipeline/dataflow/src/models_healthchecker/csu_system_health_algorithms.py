@@ -99,7 +99,7 @@ def apply_system_health_statistics_with_csu(data):
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    load_database('ecs_test','tc_ai_csu_system_health_group_v0.0.0', group)
+    load_database('test','tc_ai_mclr_csu_system_health_group', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME']]
@@ -110,7 +110,7 @@ def apply_system_health_statistics_with_csu(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    load_database('ecs_test','tc_ai_csu_model_system_health_group_v0.0.0', group)
+    load_database('test','tc_ai_csu_model_system_health_group', group)
     
     return group
 

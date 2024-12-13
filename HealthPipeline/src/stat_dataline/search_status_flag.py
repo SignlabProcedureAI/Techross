@@ -9,9 +9,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 
 # module
-from stat_dataline.search_and_update_flag_status import get_and_update_flag_status
-from 
-
+from stat_dataline.select_and_update_flag_status import get_and_update_flag_status 
 
 def get_reference_dates_by_flag_status():
     """
@@ -34,7 +32,7 @@ def get_reference_dates_by_flag_status():
 def fetch_data_on_schedule(database, table_name, start_time, end_time):
     
     username = 'signlab'
-    password = ''
+    password = 'signlab123'
     host = '172.16.18.11'  # 또는 서버의 IP 주소
     port = 3306 # MariaDB의 기본 포트
 
@@ -43,7 +41,7 @@ def fetch_data_on_schedule(database, table_name, start_time, end_time):
     
     query = f"""
     SELECT * FROM `{table_name}` 
-    WHERE  `DATA_TIME` BETWEEN '{start_time}' AND '{last_timestamp}' AND 'FLAG' = 0;
+    WHERE  `DATA_TIME` BETWEEN '{start_time}' AND '{end_time}' AND 'FLAG' = 0;
     """
     
     # Pandas를 사용하여 데이터 프레임으로 로드
@@ -71,7 +69,7 @@ def filter_by_flag_status():
     # 건전성 분석을 위한 날짜 추출
     reference_dates = get_reference_dates_by_flag_status()
 
-    filterd_dataframes = [] # 필터링된 데이터프레임을 담을 리스트
+    filtered_dataframes = [] # 필터링된 데이터프레임을 담을 리스트
 
     for date in reference_dates:
 

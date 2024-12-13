@@ -100,7 +100,7 @@ def process_preprocessed_data(indicator_data, preprocessed_data):
     concat = concat[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','NOISE','MISSING','DUPLICATE','OPERATION','DATA_COUNT','PRE_COUNT','START_DATE','END_DATE','REG_DATE']]
 
     # 데이터 적재
-    # load_database('signlab', 'tc_data_preprocessing', concat)
+    load_database('test', 'tc_data_preprocessing', concat)
     
 
 def time_decorator(func): 
@@ -116,8 +116,8 @@ def time_decorator(func):
 def distribute_by_application(ship_id, op_index, section):
 
     # 데이터 로드
-    df = get_dataframe_from_database('ecs_dat1','ecs_data', ship_id = ship_id, op_index = op_index, section = section)
-    optime = get_dataframe_from_database_optime('ecs_dat1','ecs_optime', ship_id, op_index)
+    df = get_dataframe_from_database('test','new_ecs_data', ship_id = ship_id, op_index = op_index, section = section)
+    optime = get_dataframe_from_database_optime('test','new_ecs_optime', ship_id, op_index)
 
     df = df[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','TRO','ANU','RATE','CURRENT','VOLTAGE']]
     optime = optime[['SHIP_ID','OP_INDEX','OP_TYPE','START_TIME','END_TIME','RUNNING_TIME']]
@@ -149,7 +149,7 @@ def distribute_by_application(ship_id, op_index, section):
                 process_preprocessed_data(indicator_data,data_preprocessed)
 
                 # 설명 텍스트 저장
-                file_path = f'D:\\bwms\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_file_ba.json'
+                file_path = f'D:\\bwms_test\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_file_ba.json'
 
                 find_folder(file_path)
 
@@ -182,7 +182,7 @@ def distribute_by_application(ship_id, op_index, section):
                 # 실시간 데이터 적재
                 data_col = ['SHIP_ID','OP_INDEX','SECTION','DATA_INDEX']
                 result_data = data[data_col]
-                # load_database('signlab', 'tc_data_preprocessing_result', result_data)
+                load_database('test', 'tc_data_preprocessing_result', result_data)
 
                 return original_data, data
             

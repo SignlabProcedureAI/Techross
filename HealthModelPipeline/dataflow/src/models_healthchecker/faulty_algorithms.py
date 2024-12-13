@@ -133,14 +133,14 @@ def apply_fault_label_statistics(data,count):
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    load_database('ecs_test','tc_ai_fault_group_v0.0.0', group)
+    load_database('test','tc_ai_mclr_fault_group', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET','PRED','START_TIME','END_TIME','RUNNING_TIME']]
     group = catorize_health_score(group)
 
     # 데이터 적재
-    load_database('ecs_test','tc_ai_fault_model_group_v0.0.0', group)
+    load_database('test','tc_ai_fault_model_group', group)
     
     return group
 

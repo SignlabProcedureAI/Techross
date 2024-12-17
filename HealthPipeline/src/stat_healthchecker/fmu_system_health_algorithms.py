@@ -24,7 +24,7 @@ def normalize_series(data_series,ship_id):
     fmu_scaler_path = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.abspath(os.path.join(fmu_scaler_path, '../../data/fmu_standard_scaler'))
 
-    scaler =  joblib.load(fr'{data_dir}\\{ship_id}_scaler.joblib')
+    scaler =  joblib.load(fr'{data_dir}\{ship_id}_scaler.joblib')
     
     # 2. 데이터 시리즈에 대해 표준화 수행
     standardized_data = scaler.transform(data_series)

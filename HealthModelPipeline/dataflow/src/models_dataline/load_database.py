@@ -7,15 +7,24 @@ from sqlalchemy import create_engine
 from sqlalchemy.types import VARCHAR, Integer, Float, Boolean, DateTime
 
 
-def load_database(database, table_name, data):
+def load_database(database, table_name, server, data):
 
     # MariaDB 연결을 설정합니다.
     # 'username', 'password', 'host', 'port', 'database'를 실제 값으로 대체하세요.
-    username = 'signlab'
-    password = 'signlab123'
-    host = '172.16.18.11'  # 또는 서버의 IP 주소
-    port = 3306 # MariaDB의 기본 포트
- 
+
+    if server == '200':
+        username = 'bwms_dba'
+        password = '!^admin1234^!'
+        host = 'signlab.iptime.org'  # 또는 서버의 IP 주소
+        port = 20002  # MariaDB의 기본 포트
+
+    else :
+        username = 'signlab'
+        password = 'signlab123'
+        host = '172.16.18.11'  # 또는 서버의 IP 주소
+        port = 3306 # MariaDB의 기본 포트
+    
+    
     engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')
     
     connection = engine.connect()

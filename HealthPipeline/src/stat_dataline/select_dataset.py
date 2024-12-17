@@ -10,10 +10,15 @@ def get_dataframe_from_database(database, table_name, all=False, **kwargs):
     op_index = kwargs.get('op_index')
     section = kwargs.get('section')
     
-    username = 'signlab'
-    password = 'signlab123'
-    host = '172.16.18.11'  # 또는 서버의 IP 주소
-    port = 3306 # MariaDB의 기본 포트
+    # username = 'signlab'
+    # password = 'signlab123'
+    # host = '172.16.18.11'  # 또는 서버의 IP 주소
+    # port = 3306 # MariaDB의 기본 포트
+    
+    username = 'bwms_dba'
+    password = '!^admin1234^!'
+    host = 'signlab.iptime.org'  # 또는 서버의 IP 주소
+    port = 20002  # MariaDB의 기본 포트
  
 
     # SQLAlchemy 엔진 생성

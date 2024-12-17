@@ -51,7 +51,7 @@ def apply_system_health_algorithms_with_total(data, ship_id, op_index, section):
     # criteria.to_csv(fr"C:\Users\pc021\Desktop\dx_project\techross\refrences\data_evaluation\health_data\{ship_id}_{op_index}_{section}.csv")
 
     # 그룹 적재
-    load_database('test', 'tc_ai_total_system_health_group', criteria)
+    load_database('signlab', 'tc_ai_total_system_health_group', criteria)
 
 
 def generate_tro_health_score(tro): 

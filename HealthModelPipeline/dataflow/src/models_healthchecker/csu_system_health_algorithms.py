@@ -86,7 +86,7 @@ def apply_system_health_statistics_with_csu(data):
 
     # 현재 파일의 경로를 기준으로 model 폴더 내 csu_model 경로 생성
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    csu_model_relative_path = os.path.join(current_dir,".." , "models_model","csu_model")
+    csu_model_relative_path = os.path.join(current_dir,".." , "models_model","csu_model_v2.0.0")
     # 상대 경로를 절대 경로로 변환
     csu_model_path = os.path.abspath(csu_model_relative_path)
 
@@ -99,7 +99,7 @@ def apply_system_health_statistics_with_csu(data):
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    load_database('test','tc_ai_mclr_csu_system_health_group', group)
+    load_database('ecs_test','tc_ai_csu_system_health_group_v1.1.0', '200', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME']]
@@ -110,7 +110,7 @@ def apply_system_health_statistics_with_csu(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    load_database('test','tc_ai_csu_model_system_health_group', group)
+    load_database('signalb','tc_ai_csu_model_system_health_group', 'release', group)
     
     return group
 

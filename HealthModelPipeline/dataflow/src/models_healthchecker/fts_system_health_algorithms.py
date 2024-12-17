@@ -90,20 +90,20 @@ def apply_system_health_statistics_with_fts(data):
 
     # 현재 파일의 경로를 기준으로 model 폴더 내 fts_model 경로 생성
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    fts_model_relative_path = os.path.join(current_dir,".." , "models_model","fts_model")
+    fts_model_relative_path = os.path.join(current_dir,".." , "models_model","fts_model_v2.0.0")
     # 상대 경로를 절대 경로로 변환
     fts_model_path = os.path.abspath(fts_model_relative_path)
 
     model = load_model_from_pickle(fts_model_path)
 
     # 변수 선택 및 예측
-    X = group[['FTS_MEAN','FTS_MAX','DIFF_MEAN','DIFF_MAX','TREND_SCORE']]
+    X = group[['FTS_MIN','FTS_MEAN','FTS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX','TREND_SCORE']]
     pred =  model.predict(X)
 
     group['PRED'] = pred
 
     # 학습 데이터 적재
-    load_database('test','tc_ai_mclr_fts_system_health_group', group)
+    load_database('ecs_test','tc_ai_fts_system_health_group_v1.1.0', '200', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME']]
@@ -114,7 +114,7 @@ def apply_system_health_statistics_with_fts(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    load_database('test','tc_ai_fts_model_system_health_group', group)
+    load_database('signlab','tc_ai_fts_model_system_health_group', 'release', group)
     
     return group
 

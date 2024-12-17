@@ -3,6 +3,7 @@ import pandas as pd
 import warnings
 import joblib
 import os
+from sklearn.preprocessing import StandardScaler
 
 # module.healthchecker
 import stat_healthchecker.rate_of_change_algorithms as rate_algorithms
@@ -14,21 +15,38 @@ from stat_dataline.load_database import load_database
 warnings.filterwarnings("ignore")
 pd.set_option('display.max_rows',2400)
 
+def normalize_series(data_series):
+    
+    """ 표준화/정규화 함수
+    """   
+   # 1. StandardScaler 객체 생성
+    scaler = StandardScaler()
+    
+    # 2. 데이터 시리즈에 대해 표준화 수행
+    standardized_data = scaler.fit_transform(data_series)
+    
+    return standardized_data, scaler
 
-def normalize_series(data_series,ship_id):
+
+def fetch_scaled_data(data_series,ship_id):
     
     """ 표준화/정규화 함수
     """   
     # 1.StandardScaler 객체 로드
-
     fmu_scaler_path = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.abspath(os.path.join(fmu_scaler_path, '../../data/fmu_standard_scaler'))
 
-    scaler =  joblib.load(fr'{data_dir}\{ship_id}_scaler.joblib')
-    
-    # 2. 데이터 시리즈에 대해 표준화 수행
-    standardized_data = scaler.transform(data_series)
-    
+    ship_scaler_path = os.path.join(data_dir, f'{ship_id}_scaler.joblib')
+
+    if os.path.exists(ship_scaler_path):
+        scaler =  joblib.load(fr'{data_dir}\{ship_id}_scaler.joblib')
+        # 2. 데이터 시리즈에 대해 표준화 수행
+        standardized_data = scaler.transform(data_series)
+    else:
+        standardized_data, scaler = normalize_series(data_series)
+        # 3.5 각 배의 StandarScaler 저장
+        joblib.dump(scaler, ship_scaler_path) 
+
     return standardized_data
 
 
@@ -85,7 +103,7 @@ def generate_health_score(data,col,ship_id):
     건강도 함수 적용
     """
     # 1. 정규화 함수 사용
-    data['STANDARDIZE_FMU'] = normalize_series(data[[col]],ship_id)
+    data['STANDARDIZE_FMU'] = fetch_scaled_data(data[[col]],ship_id)
     standarize_fmu = 'STANDARDIZE_FMU'
         
     # 1.5 변수 변경

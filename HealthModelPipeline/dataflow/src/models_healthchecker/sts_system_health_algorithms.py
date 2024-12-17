@@ -87,6 +87,9 @@ def apply_system_health_statistics_with_sts(data):
     
     # 모델 로드
 
+    # 학습 데이터 적재   
+    load_database('ecs_test','tc_ai_sts_system_health_group_v1.1.0', '200', group)
+
     # 현재 파일의 경로를 기준으로 model 폴더 내 sts_model 경로 생성
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sts_model_relative_path = os.path.join(current_dir,".." , "models_model","sts_model_v2.0.0")
@@ -100,9 +103,6 @@ def apply_system_health_statistics_with_sts(data):
     pred =  model.predict(X)
 
     group['PRED'] = pred
-
-    # 학습 데이터 적재
-    load_database('ecs_test','tc_ai_sts_system_health_group_v1.1.0', '200', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME']]

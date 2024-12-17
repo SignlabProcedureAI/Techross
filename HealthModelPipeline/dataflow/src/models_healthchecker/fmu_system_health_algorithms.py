@@ -101,6 +101,9 @@ def apply_system_health_statistics_with_fmu(data):
            'HEALTH_RATIO','HEALTH_TREND','HEALTH_SCORE','START_TIME','END_TIME','RUNNING_TIME']]
     
 
+    # 학습 데이터 적재
+    load_database('ecs_test','tc_ai__fmu_system_health_group_v1.1.0', '200', group)
+
     # 모델 로드
 
     # 현재 파일의 경로를 기준으로 model 폴더 내 fmu_model 경로 생성
@@ -117,9 +120,6 @@ def apply_system_health_statistics_with_fmu(data):
 
     group['PRED'] = pred
 
-    # 학습 데이터 적재
-    load_database('ecs_test','tc_ai__fmu_system_health_group_v1.1.0', group)
-
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME']]
     group = catorize_health_score(group)
@@ -129,7 +129,7 @@ def apply_system_health_statistics_with_fmu(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    load_database('signalb','tc_ai_fmu_model_system_health_group', 'release', group)
+    load_database('signlab','tc_ai_fmu_model_system_health_group', 'release', group)
     
     return group
 

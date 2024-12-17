@@ -113,6 +113,9 @@ def apply_system_health_statistics_with_current(data):
     # 컬럼 재 정렬
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','START_TIME','END_TIME','RUNNING_TIME','CSU','STS','FTS','FMU','TRO','RATE','VOLTAGE','CURRENT','ELECTRODE_EFFICIENCY']]
     
+    # 학습 데이터 적재
+    load_database('ecs_test','tc_ai_electrode_group_v1.1.0', '200', group)
+
     # 모델 로드
 
     # 현재 파일의 경로를 기준으로 model 폴더 내 ecu_model 경로 생성
@@ -129,9 +132,6 @@ def apply_system_health_statistics_with_current(data):
 
     group['PRED'] = pred
 
-    # 학습 데이터 적재
-    load_database('ecs_test','tc_ai_electrode_group_v1.1.0', '200', group)
-
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','ELECTRODE_EFFICIENCY','PRED','START_TIME','END_TIME','RUNNING_TIME']]
     group = catorize_health_score(group)
@@ -141,7 +141,7 @@ def apply_system_health_statistics_with_current(data):
     group['PRED'] = np.round(group['PRED'],2)
 
     # 뷰 데이터 적재
-    load_database('signalb','tc_ai_electrode_model_group', 'release', group)
+    load_database('signlab','tc_ai_electrode_model_group', 'release', group)
 
     return group
 

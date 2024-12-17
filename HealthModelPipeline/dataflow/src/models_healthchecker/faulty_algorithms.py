@@ -112,6 +112,9 @@ def apply_fault_label_statistics(data,count):
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','STS','FTS','FMU','CURRENT','TRO_MIN','TRO_MEAN','TRO_MAX','TRO_DIFF_MIN','TRO_DIFF_MEAN','TRO_DIFF_MAX','PEAK_VALLEY_INDICES_SUM','CROSS_CORRELATION','RE_CROSS_CORRELATION','PRED_DIFF','RE_CROSS_CORRELATION_COUNT',
                      'TRO_NEG_COUNT','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET','START_TIME','END_TIME','RUNNING_TIME']]
     
+    # 학습 데이터 적재
+    load_database('ecs_test','tc_ai_fault_group_v1.1.0', '200', group)
+
     # 모델 로드
 
     # 현재 파일의 경로를 기준으로 model 폴더 내 tro_model 경로 생성
@@ -131,9 +134,6 @@ def apply_fault_label_statistics(data,count):
     pred =  model.predict(X)
 
     group['PRED'] = pred
-
-    # 학습 데이터 적재
-    load_database('ecs_test','tc_ai_fault_group_v1.1.0', '200', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET','PRED','START_TIME','END_TIME','RUNNING_TIME']]

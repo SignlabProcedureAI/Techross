@@ -86,6 +86,9 @@ def apply_system_health_statistics_with_fts(data):
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','STS','FMU','CURRENT','TRO','FTS_MIN','FTS_MEAN','FTS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX','THRESHOLD','TREND_SCORE',
            'HEALTH_RATIO','HEALTH_TREND','HEALTH_SCORE','START_TIME','END_TIME','RUNNING_TIME']]
     
+    # 학습 데이터 적재
+    load_database('ecs_test','tc_ai_fts_system_health_group_v1.1.0', '200', group)
+
     # 모델 로드
 
     # 현재 파일의 경로를 기준으로 model 폴더 내 fts_model 경로 생성
@@ -101,9 +104,6 @@ def apply_system_health_statistics_with_fts(data):
     pred =  model.predict(X)
 
     group['PRED'] = pred
-
-    # 학습 데이터 적재
-    load_database('ecs_test','tc_ai_fts_system_health_group_v1.1.0', '200', group)
 
     # 웹 표출을 위한 변수 정제
     group = group[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME']]

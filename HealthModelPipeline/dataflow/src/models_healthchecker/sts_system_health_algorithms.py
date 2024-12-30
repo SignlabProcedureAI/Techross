@@ -114,7 +114,8 @@ def apply_system_health_statistics_with_sts(data):
 
     # 뷰 데이터 적재
     load_database('signlab','tc_ai_sts_model_system_health_group', 'release', group)
-    
+    # load_database('ecs_test','tc_ai_sts_model_system_health_group_flag', '200', group)
+
     return group
 
 

@@ -26,6 +26,9 @@ def get_reference_dates_by_flag_status():
     # Convert the filtered reference dates to a list
     reference_dates = filtered_df['REFERENCE_DT'].tolist()
 
+    print("/n[건전성 분석을 위한 날짜 추출]...")
+    print(f"{reference_dates}")
+
     return reference_dates
 
 
@@ -41,7 +44,7 @@ def fetch_data_on_schedule(database, table_name, start_time, end_time):
     
     query = f"""
     SELECT * FROM `{table_name}` 
-    WHERE  `DATA_TIME` BETWEEN '{start_time}' AND '{end_time}' AND 'FLAG' = 0;
+    WHERE  `REG_DATE` BETWEEN '{start_time}' AND '{end_time}' AND 'FLAG' = 0;
     """
     
     # Pandas를 사용하여 데이터 프레임으로 로드
@@ -52,13 +55,13 @@ def fetch_data_on_schedule(database, table_name, start_time, end_time):
         return None
 
     # FLAG 업데이트
-    update_query = f"""
-    UPDATE `{table_name}`
-    SET `FLAG` = 1
-    WHERE `DATA_TIME` BETWEEN '{start_time}' AND '{end_time}' AND `FLAG` = 0;
-    """
+    # update_query = f"""
+    # UPDATE `{table_name}`
+    # SET `FLAG` = 1
+    # WHERE `REG_DATE` BETWEEN '{start_time}' AND '{end_time}' AND `FLAG` = 0;
+    # """
     with engine.begin() as connection:
-        connection.execute(update_query)
+        connection.execute(query)
 
     # 결과 반환
     return df
@@ -80,5 +83,6 @@ def filter_by_flag_status():
         filterd_data = fetch_data_on_schedule('signlab', 'tc_ecs_data_flag', start_time, end_time)
         filtered_dataframes.append(filterd_data) # 리스트에 데이터 추가 
 
-    return pd.concat(filtered_dataframes, ignore_index=True)
+    print("/n [건전성 분석 데이터 리턴..]")
 
+    return pd.concat(filtered_dataframes, ignore_index=True)

@@ -141,6 +141,7 @@ def apply_fault_label_statistics(data,count):
 
     # 데이터 적재
     load_database('signlab','tc_ai_fault_model_group', 'release', group)
+    # load_database('ecs_test','tc_ai_fault_model_group_flag', '200', group)
     
     return group
 

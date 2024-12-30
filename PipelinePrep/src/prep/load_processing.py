@@ -101,7 +101,7 @@ def process_preprocessed_data(indicator_data, preprocessed_data):
 
     # 데이터 적재
     load_database('signlab', 'tc_data_preprocessing', concat)
-    
+    # load_database('ecs_test', 'tc_data_preprocessing_flag', concat)
 
 def time_decorator(func): 
     def wrapper(**kwargs):
@@ -116,11 +116,11 @@ def time_decorator(func):
 def distribute_by_application(ship_id, op_index, section):
 
     # 데이터 로드
-    df = get_dataframe_from_database('ecs_dat1','ecs_data_new', ship_id = ship_id, op_index = op_index, section = section)
-    optime = get_dataframe_from_database_optime('ecs_dat1','ecs_optime_new', ship_id, op_index)
+    df = get_dataframe_from_database('signlab','tc_ecs_data_flag', ship_id = ship_id, op_index = op_index, section = section)
+    optime = get_dataframe_from_database_optime('signlab','tc_ecs_optime_flag', ship_id, op_index)
 
     df = df[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','TRO','ANU','RATE','CURRENT','VOLTAGE']]
-    optime = optime[['SHIP_ID','OP_INDEX','OP_TYPE','START_TIME','END_TIME','RUNNING_TIME']]
+    optime = optime[['SHIP_ID','OP_INDEX','OP_TYPE','START_TIME','END_TIME','RUNNING_TIME']] 
     date_time = optime.iloc[0]['START_TIME']
 
     if optime.empty:
@@ -182,7 +182,8 @@ def distribute_by_application(ship_id, op_index, section):
                 # 실시간 데이터 적재
                 data_col = ['SHIP_ID','OP_INDEX','SECTION','DATA_INDEX']
                 result_data = data[data_col]
-                load_database('signlab', 'tc_data_preprocessing_result', result_data)
+                load_database('signlab', 'tc_data_preprocessing_result', result_data) 
+                # load_database('ecs_test', 'tc_data_preprocessing_result_flag', result_data)
 
                 return original_data, data
             

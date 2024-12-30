@@ -52,7 +52,7 @@ def apply_system_health_algorithms_with_total(data, ship_id, op_index, section):
 
     # 그룹 적재
     load_database('signlab', 'tc_ai_total_system_health_group', criteria)
-
+    # load_database('ecs_test', 'tc_ai_total_system_health_group_flag', criteria)
 
 def generate_tro_health_score(tro): 
     

@@ -22,7 +22,7 @@ def load_database(database, table_name, server, data):
         username = 'signlab'
         password = 'signlab123'
         host = '172.16.18.11'  # 또는 서버의 IP 주소
-        port = 3306 # MariaDB의 기본 포트
+        port = 3306 # MariaDB의 기본 포트 
     
     
     engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')

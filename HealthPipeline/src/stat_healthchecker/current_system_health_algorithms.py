@@ -108,7 +108,8 @@ def apply_system_health_statistics_with_current(data):
     group['OP_TYPE'] = op_type 
     
     # 데이터 적재
-    load_database('signlab', 'tc_ai_current_system_health_group', group) 
+    load_database('signlab', 'tc_ai_current_system_health_group', group)
+    # load_database('ecs_test', 'tc_ai_current_system_health_group_flag', group)  
 
     return group
 
@@ -151,7 +152,7 @@ def apply_system_health_algorithms_with_current(data):
     sensor_data = system_data_condition[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','ELECTRODE_EFFICIENCY']]
 
     # 9. 자동 적재
-    load_database('signlab','tc_ai_current_system_health', sensor_data)
+    # load_database('signlab','tc_ai_current_system_health', sensor_data)
 
     return sensor_data, group
     

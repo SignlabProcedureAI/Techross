@@ -25,7 +25,7 @@ def get_and_update_flag_status():
     
     query = f"""
     SELECT * FROM `{table_name}` 
-    WHERE  `DATA_TIME` BETWEEN `IS_COMPLETE` != 0 AND `IS_PREPROCESSING` = 0;
+    WHERE `IS_COMPLETE` != 0 AND `IS_PREPROCESSING` = 0;
     """
     
     # Pandas를 사용하여 데이터 프레임으로 로드
@@ -39,7 +39,7 @@ def get_and_update_flag_status():
     update_query = f"""
     UPDATE `tc_flag_status`
     SET `IS_PREPROCESSING` = 1
-    WHERE `DATA_TIME` BETWEEN  `IS_COMPLETE` != 0 AND `IS_PREPROCESSING` = 0;
+    WHERE `IS_COMPLETE` != 0 AND `IS_PREPROCESSING` = 0;
     """
 
     # Execute the update query within a transaction

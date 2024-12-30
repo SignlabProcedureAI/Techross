@@ -142,6 +142,7 @@ def apply_system_health_statistics_with_current(data):
 
     # 뷰 데이터 적재
     load_database('signlab','tc_ai_electrode_model_group', 'release', group)
+    # load_database('ecs_test','tc_ai_electrode_model_group_flag', '200', group)
 
     return group
 

@@ -5,6 +5,7 @@ import os
 
 # visualize
 import matplotlib.pyplot as plt
+import matplotlib
 import seaborn as sns
 
 
@@ -15,6 +16,9 @@ from prep.preprocessing import apply_preprocessing_fuction
 
 # 인터랙티브 모드 비활성화
 plt.ioff()
+
+# 비대화형 백엔드 설정
+matplotlib.use('Agg')  
 
 
 def find_folder(file_path):
@@ -154,12 +158,13 @@ def plot_histograms_with_noise(df, ship_id, op_index, section, str_op_type):
     plt.tight_layout()
    
     #if boa == 'before':
-    file_path = f'D:\\bwms_test\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_noise_ba.png' 
+    file_path = f'D:\\bwms\\preprocessing\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_noise_ba.png' 
 
     # 파일의 디렉토리 경로 추출
     find_folder(file_path)
 
     plt.savefig(file_path, dpi=300, bbox_inches='tight')
+    plt.close('all')  # 메모리 해제
 
     # 이 부분 주석
     #else:
@@ -215,12 +220,13 @@ def plot_bar_with_operation(original_data,ship_id, op_index, section, op_type):
 
     plt.tight_layout()
 
-    file_path = f"D:\\bwms_test\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_operation_ba.png"
+    file_path = f"D:\\bwms\\preprocessing\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_operation_ba.png"
 
     # 파일의 디렉토리 경로 추출
     find_folder(file_path)
 
     plt.savefig(file_path, dpi=300, bbox_inches='tight')
+    plt.close('all')  # 메모리 해제
     #plt.show()
     
 
@@ -255,11 +261,12 @@ def plot_pie_with_duplication(original_data, ship_id, op_index, section, op_type
 
     plt.tight_layout()
 
-    file_path = f"D:\\bwms_test\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_duplication_ba.png"
+    file_path = f"D:\\bwms\\preprocessing\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_duplication_ba.png"
 
     find_folder(file_path)
 
     plt.savefig(file_path, dpi=300, bbox_inches='tight')
+    plt.close('all')  # 메모리 해제
     #plt.show()
     
 
@@ -298,9 +305,10 @@ def plot_double_bar_with_missing(original_data, ship_id, op_index, section, op_t
     # 그래프 보여주기
     plt.tight_layout()
 
-    file_path = f"D:\\bwms_test\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_missing_ba.png"
+    file_path = f"D:\\bwms\\preprocessing\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_missing_ba.png"
 
     find_folder(file_path)
 
     plt.savefig(file_path, dpi=300, bbox_inches='tight')
+    plt.close('all')  # 메모리 해제
     #plt.show()

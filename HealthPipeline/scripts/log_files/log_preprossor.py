@@ -24,5 +24,3 @@ def preprocess_log_file(file_path):
     df = pd.DataFrame(data)
 
     return df
-
-file_path('log_20241107.log')

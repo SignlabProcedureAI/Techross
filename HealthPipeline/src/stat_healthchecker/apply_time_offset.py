@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 # module.healthchecker
-import stat_healthchecker.rate_of_change_algorithms as rate_algorithms
+import HealthPipeline.src.stat_healthchecker.deprecated_modules.rate_of_change_algorithms as rate_algorithms
 
 # math
 from scipy.signal import correlate

@@ -6,7 +6,7 @@ import os
 from sklearn.preprocessing import StandardScaler
 
 # module.healthchecker
-import stat_healthchecker.rate_of_change_algorithms as rate_algorithms
+import HealthPipeline.src.stat_healthchecker.deprecated_modules.rate_of_change_algorithms as rate_algorithms
 
 # module.dataline
 from stat_dataline.load_database import load_database

@@ -1,88 +1,162 @@
 # basic
 import pandas as pd
-import json
-
-# time
-from datetime import datetime, timedelta
 
 # database
 from sqlalchemy import create_engine
 
 # module
-from stat_dataline.select_and_update_flag_status import get_and_update_flag_status 
+from stat_dataline.flag_status_manager import FlagStatusManager 
+from stat_dataline.db_engine import DatabaseEngine 
 
-def get_reference_dates_by_flag_status():
-    """
-    Extract reference dates from the `tc_flag_status` table where:
-    - `IS_COMPLETE` is 1 (True)
-    - `IS_PREPROCESSING` is not 0 (False)
-
-    Returns:
-        list: A list of reference dates (`REFERENCE_DT`) matching the conditions.
-    """
-   
-    filtered_df = get_and_update_flag_status()
-
-    # Convert the filtered reference dates to a list
-    reference_dates = filtered_df['REFERENCE_DT'].tolist()
-
-    print("/n[건전성 분석을 위한 날짜 추출]...")
-    print(f"{reference_dates}")
-
-    return reference_dates
-
-
-def fetch_data_on_schedule(database, table_name, start_time, end_time):
-    
-    username = 'signlab'
-    password = 'signlab123'
-    host = '172.16.18.11'  # 또는 서버의 IP 주소
-    port = 3306 # MariaDB의 기본 포트
-
-    # SQLAlchemy 엔진 생성
-    engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')
-    
-    query = f"""
-    SELECT * FROM `{table_name}` 
-    WHERE  `REG_DATE` BETWEEN '{start_time}' AND '{end_time}' AND 'FLAG' = 0;
+class ReferenceDateManager:
+    """ [책임] 건전성 분석을 위한 날짜 추출을 관리
     """
     
-    # Pandas를 사용하여 데이터 프레임으로 로드
-    df = pd.read_sql(query, engine)
+    def __init__(self, flag_manager:FlagStatusManager):
+        self.__flag_manager = flag_manager #[캡슐화] FlagManager 의존성 주입
+
     
-    if df.empty:
-        print("해당 데이터 프레임은 비어있습니다.")
-        return None
+    def get_reference_dates(self):
+        """ [행동] 건전성 분석을 위한 날짜 목록을 반환
+        """
+        filtered_df = self.__flag_manager.get_and_update_falg_status()
+        if filtered_df is None or filtered_df.empty:
+            print("[ReferenceDateManager] No valid reference dates found.")
+            return []
 
-    # FLAG 업데이트
-    # update_query = f"""
-    # UPDATE `{table_name}`
-    # SET `FLAG` = 1
-    # WHERE `REG_DATE` BETWEEN '{start_time}' AND '{end_time}' AND `FLAG` = 0;
-    # """
-    with engine.begin() as connection:
-        connection.execute(query)
+        reference_dates = filtered_df['REFERENCE_DT'].tolist()
+        print("\n[건전성 분석을 위한 날짜 추출]...")
+        print(f"{reference_dates}")
 
-    # 결과 반환
-    return df
+        return reference_dates
 
 
-def filter_by_flag_status():
+class ScheduledDataFetcher:
+    """ [책임] 주어진 일정에 따라 데이터를 필터링하고 반환
+    """
+    
+    def __init__(self, db_engine:DatabaseEngine, table_name):
+        self.__engine = db_engine.engine # [캡슐화] DB 엔진 접근
+        self.__table_name = table_name # [캡슐화] 테이블 이름
 
-    # 건전성 분석을 위한 날짜 추출
-    reference_dates = get_reference_dates_by_flag_status()
+    
+    def __fetch_data(self, start_time, end_time):
+        """  [내부 전용 메서드] 주어진 시간 범위에서 데이터 조회
+        """
 
-    filtered_dataframes = [] # 필터링된 데이터프레임을 담을 리스트
+        query = f"""
+        SELECT * FROM `{self.__table_name}` 
+        WHERE `REG_DATE` BETWEEN '{start_time}' AND '{end_time}' AND `FLAG` = 0;
+        """
+        df = pd.read_sql(query, self.__engine)
 
-    for date in reference_dates:
+        return df
 
-        # 기준 시각
-        start_time  = date
-        end_time = start_time + pd.Timedelta(days=1) # 하루 뒤
+    
+    def __update_flag(self, start_time, end_time):
+        """ [내부 전용 메서드]
+        """
 
-        filterd_data = fetch_data_on_schedule('signlab', 'tc_ecs_data_flag', start_time, end_time)
-        filtered_dataframes.append(filterd_data) # 리스트에 데이터 추가 
+        update_query = f"""
+        UPDATE `{self.__table_name}`
+        SET `FLAG` = 1
+        WHERE `REG_DATE` BETWEEN '{start_time}' AND '{end_time}' AND `FLAG` = 0;
+        """
+        with self.__engine.begin() as connection:
+            connection.execute(update_query)
 
-    print("/n [건전성 분석 데이터 리턴..]")
+    
+    def fetch_data_on_schedule(self, start_time, end_time):
+        """ [행동] 일정에 따라 데이터 필터링 및 FLAG 업데이트트
+        """
+        
+        df = self.__fetch_data(start_time, end_time)
+        if df.empty:
+            print("[ScheduledDataFetcher] No data found for the given schedule.")
+            return None
+        
+        self.__update_flag(start_time, end_time)
+        
+        return df
+    
 
-    return pd.concat(filtered_dataframes, ignore_index=True)
+class DataFilterManager:
+    """ [책임] 날짜를 기반으로 데이터 필터링 및 스케줄링 관리 
+    """
+
+    def __init__(self, reference_date_manager:ReferenceDateManager, scheduled_fetcher:ScheduledDataFetcher):
+        self.__reference_date_manager = reference_date_manager  # [캡슐화] ReferenceDateManager 의존성
+        self.__scheduled_fetcher = scheduled_fetcher  # [캡슐화] ScheduledDataFetcher 의존성
+
+    
+    def filter_by_flag_status(self):
+        """ [행동] 날짜 목록을 기준으로 데이터를 필터링
+        """
+
+        reference_dates  = self.__reference_date_manager.get_reference_dates()
+        if not reference_dates:
+            print("[DataFilterManager] No reference dates available.")
+            return None
+        
+        filtered_dataframes = []
+
+        for date in reference_dates:
+            start_time = pd.Timestamp(date)
+            end_time = start_time + pd.Timedelta(days=1)
+
+            filtered_data = self.__scheduled_fetcher.fetch_data_on_schedule(start_time, end_time)
+            if filtered_data is not None:
+                filtered_dataframes.append(filtered_data)
+
+        print("\n[건전성 분석 데이터 리턴...]")
+        return pd.concat(filtered_dataframes, ignore_index=True) if filtered_dataframes else None
+    
+
+class DataPipelineManager:
+    """
+    [Facade Pattern] 데이터 파이프라인 초기화 및 실행 관리
+    """
+
+    def __init__(self):
+        """ [행동] 모든 객체 초기화 및 의존성 주입
+        """
+        # DB 엔진 생성
+        self.__db_engine = DatabaseEngine(
+            username='signlab',
+            password='signlab123',
+            host='172.16.18.11',
+            port=3306,
+            database='signlab'
+        )
+
+        # Flag 상태 매니저 생성
+        self.__flag_manager = FlagStatusManager(
+            engine = self.__db_engine.engine,
+            table_name = 'tc_flag_status'
+        )
+
+        # Reference Date 매니저 생성
+        self.__reference_date_manager = ReferenceDateManager(self.__flag_manager)
+
+        # Scheduled Data Fetcher 생성
+        self.__schedule_fetcher = ScheduledDataFetcher(
+            db_engine=self.__db_engine,
+            database='signlab',
+            table_name='tc_ecs_data_flag'
+        )
+
+        # 데이터 필터링 매니저 생성
+        self.__data_filter_manager = DataFilterManager(
+            self.__reference_date_manager,
+            self.__schedule_fetcher
+        )
+
+    
+    def run_pipeline(self):
+        """ [행동] 데이터 필터링 실행 및 결과 반환
+        """
+        print("[DataPipelineManager] 데이터 파이프라인 실행 시작...")
+        result = self.__data_filter_manager.filter_by_flag_status()
+        print("[DataPipelineManager] 데이터 파이프라인 실행 완료.")
+        return result
+    

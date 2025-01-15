@@ -4,8 +4,8 @@ import os
 import pickle
 
 # module.healthchecker
-import models_healthchecker.rate_of_change_algorithms as rate_algorithms
-import models_healthchecker.apply_hunting as apply_hunting
+import HealthModelPipeline.dataflow.src.models_healthchecker.deprecated_modules.rate_of_change_algorithms as rate_algorithms
+import hunting_processor as ModelHunting
 import models_healthchecker.apply_time_offset as apply_time_offset
 
 # module.dataline
@@ -201,7 +201,7 @@ def label_data_points(data):
     data = give_tro_out_of_water_condition(data)
     
     # Hunting 라벨 
-    data = apply_hunting.label_hunting_multiple_of_two(data)
+    data = ModelHunting.label_hunting_multiple_of_two(data)
     
     # Time Offset 라벨 
     data, count = apply_time_offset.classify_time_offset_label(data)

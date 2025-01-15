@@ -7,8 +7,21 @@ from sqlalchemy.types import VARCHAR, Integer, Float, Boolean, DateTime
 
 def load_database(database, table_name, data):
 
-    # MariaDB 연결을 설정합니다.
-    # 'username', 'password', 'host', 'port', 'database'를 실제 값으로 대체하세요.
+    """
+    pandas DataFrame을 MariaDB 테이블에 적재합니다.
+
+    이 함수는 MariaDB 데이터베이스에 연결한 뒤, DataFrame의 각 열에 맞는 
+    SQL 데이터 타입을 매핑하여 테이블에 데이터를 삽입합니다.
+
+    Args:
+        database (str): 데이터베이스 이름.
+        table_name (str): 데이터를 삽입할 테이블 이름.
+        data (pandas.DataFrame): 삽입할 데이터를 담고 있는 pandas DataFrame.
+
+    Returns:
+        None: 데이터가 성공적으로 삽입되면 메시지를 출력합니다. 
+              오류가 발생하거나 DataFrame이 비어있을 경우 예외(테이블 생성) 또는 경고 메시지를 출력합니다.
+    """
 
     username = 'signlab'
     password = 'signlab123'
@@ -43,8 +56,6 @@ def load_database(database, table_name, data):
             dtype_mapping[column] = VARCHAR(255)
 
     # 데이터 프레임을 MariaDB에 적재합니다.
-    # 'your_table_name'을 실제 테이블 이름으로 대체하세요.
-
     try:
         # DataFrame 'data'가 비어있는지 확인
         if not data.empty:
@@ -57,4 +68,3 @@ def load_database(database, table_name, data):
     except Exception as e:
         # 예외 발생 
         print(f"Failed to load data:{e}")
-

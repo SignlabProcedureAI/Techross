@@ -7,7 +7,7 @@ import sys
 import pickle
 
 # module.healthchecker
-import models_healthchecker.rate_of_change_algorithms as rate_algorithms
+import HealthModelPipeline.dataflow.src.models_healthchecker.deprecated_modules.rate_of_change_algorithms as rate_algorithms
 
 # module.dataline
 from models_dataline.load_database import load_database

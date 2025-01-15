@@ -1,33 +1,36 @@
 # basic
 import pandas as pd
 
-# database
-from sqlalchemy import create_engine
+# module
+from db_engine import DatabaseEngine
 
-def get_dataframe_from_database(database, table_name, all=False, **kwargs):
+def get_dataframe_from_database(table_name, all: bool = False, optime: bool = False, **kwargs):
 
     ship_id = kwargs.get('ship_id')
     op_index = kwargs.get('op_index')
     section = kwargs.get('section')
     
-    username = 'signlab'
-    password = 'signlab123'
-    host = '172.16.18.11'  # 또는 서버의 IP 주소
-    port = 3306 # MariaDB의 기본 포트
-    
     # username = 'bwms_dba'
     # password = '!^admin1234^!'
     # host = 'signlab.iptime.org'  # 또는 서버의 IP 주소
     # port = 20002  # MariaDB의 기본 포트
- 
-
-    # SQLAlchemy 엔진 생성
-    engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')
     
+    # DatabaseEngine 객체 생성
+    db_engine = DatabaseEngine(
+        username='signlab',
+        password='signlab123',
+        host='172.16.18.11',
+        port=3306,
+        database='signlab'
+    )
 
-    if not all: 
+    engine = db_engine.engine  # SQLAlchemy 엔진 접근
+
+    if not all and not optime: 
         # SQL 쿼리
         query = f"SELECT * FROM `{table_name}` WHERE `SHIP_ID` = '{ship_id}'AND `OP_INDEX` = '{op_index}' AND `SECTION` = '{section}';"
+    elif not all and optime:
+        query = f"SELECT * FROM `{table_name}` WHERE `SHIP_ID` = '{ship_id}'AND `OP_INDEX` = {op_index} ;"
     else:
         # SQL 쿼리
         query = f"SELECT * FROM `{table_name}`"
@@ -35,6 +38,6 @@ def get_dataframe_from_database(database, table_name, all=False, **kwargs):
     # Pandas를 사용하여 데이터 프레임으로 로드
     df = pd.read_sql(query, engine)
     
-    return df
+    return df 
 
 

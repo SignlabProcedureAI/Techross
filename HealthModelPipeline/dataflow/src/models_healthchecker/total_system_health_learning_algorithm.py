@@ -9,7 +9,7 @@ import models_healthchecker.csu_system_health_algorithms as csu_algorithms
 import models_healthchecker.sts_system_health_algorithms as sts_algorithms
 import models_healthchecker.fts_system_health_algorithms as fts_algorithms
 import models_healthchecker.fmu_system_health_algorithms as fmu_algorithms
-import models_healthchecker.faulty_algorithms as faulty_algorithms 
+from tro_fault_detector import TROFaultAlgorithm
 import models_healthchecker.current_system_health_algorithms as current_algorithms
 
 # module.dataline
@@ -38,7 +38,8 @@ def apply_system_health_learning_algorithms_with_total(data, ship_id, op_index, 
     sts, sts_group = sts_algorithms.apply_system_health_algorithms_with_sts(data)
 
     # 3. TRO 불량 원인 적용
-    tro, tro_group = faulty_algorithms.apply_fault_algorithms(data)
+    fault_detector = TROFaultAlgorithm(data)
+    tro, tro_group = fault_detector.apply_tro_fault_detector()
     
     # 4. FTS 건강도 적용
     fts, fts_group = fts_algorithms.apply_system_health_algorithms_with_fts(data)

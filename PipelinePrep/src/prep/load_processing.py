@@ -38,7 +38,6 @@ from prep_visualizer import visualize as visual
 
 # module.dataline
 from prep_dataline.select_dataset  import get_dataframe_from_database
-from prep_dataline.select_dataset_optime import get_dataframe_from_database_optime
 from prep_dataline.load_database import load_database
 from stat_dataline.logger_confg import logger
 
@@ -116,8 +115,8 @@ def time_decorator(func):
 def distribute_by_application(ship_id, op_index, section):
 
     # 데이터 로드
-    df = get_dataframe_from_database('signlab','tc_ecs_data_flag', ship_id = ship_id, op_index = op_index, section = section)
-    optime = get_dataframe_from_database_optime('signlab','tc_ecs_optime_flag', ship_id, op_index)
+    df = get_dataframe_from_database('tc_ecs_data_flag', ship_id = ship_id, op_index = op_index, section = section)
+    optime = get_dataframe_from_database('tc_ecs_optime_flag', optime=True, ship_id = ship_id, op_index = op_index)
 
     df = df[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','TRO','ANU','RATE','CURRENT','VOLTAGE']]
     optime = optime[['SHIP_ID','OP_INDEX','OP_TYPE','START_TIME','END_TIME','RUNNING_TIME']] 
@@ -146,7 +145,7 @@ def distribute_by_application(ship_id, op_index, section):
                 # idx,reg,op_type = distribute_variables(ship_id, op_index, section)
                     
                 # tc_data_preprocessing 적재
-                process_preprocessed_data(indicator_data,data_preprocessed)
+                process_preprocessed_data(indicator_data,data_preprocessed) 
 
                 # 설명 텍스트 저장
                 file_path = f'D:\\bwms_test\\{ship_id}\\{op_index}\\{ship_id}_{op_index}_{section}_file_ba.json'

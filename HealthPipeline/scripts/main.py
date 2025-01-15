@@ -37,15 +37,15 @@ from models_healthchecker.total_system_health_learning_algorithm import apply_sy
 from prep.load_processing import distribute_by_application
 
 # module.dataline
-from stat_dataline.scheduled_data_fetcher import fetch_data_on_schedule
 from stat_dataline.logger_confg import logger
-from stat_dataline.select_dataset import get_dataframe_from_database
-from stat_dataline.search_status_flag import filter_by_flag_status
+from stat_dataline.search_status_flag import DataPipelineManager
 
 
 def get_latest_date_on_schedule():
 
-    fetched_data = filter_by_flag_status()
+    pipeline = DataPipelineManager()
+    fetched_data = pipeline.filter_by_flag_status()
+    # fetched_data = filter_by_flag_status()
     
     # 해당 추출 데이터 그룹화
     grouped_data = fetched_data.groupby(['SHIP_ID','OP_INDEX','SECTION']).count() 

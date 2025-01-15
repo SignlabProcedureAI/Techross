@@ -1,4 +1,3 @@
-
 # basic
 import numpy as np
 
@@ -6,11 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # module.healthchecker
-import models_healthchecker.rate_of_change_algorithms as rate_algorithms
+import HealthPipeline.src.stat_healthchecker.deprecated_modules.rate_of_change_algorithms as rate_algorithms
 
 
 def extract_rate_of_change_threshold(data):
-
     # 양의 변화율과 음의 변화율이 특정 임계값을 초과하는 지점을 찾습니다.
     positive_threshold = data['TRO_Ratio'].quantile(0.95)  # 상위 5%를 초과하는 변화율을 임계값으로 설정합니다.
     negative_threshold = data['TRO_Ratio'].quantile(0.05)  # 하위 5%를 초과하는 변화율을 임계값으로 설정합니다.
@@ -32,31 +30,21 @@ def plot_hunting_threshold(data):
     plt.title('Signal with Change Rate Peaks and Valleys')
     plt.legend()
     plt.show()
-
-    # 변화율 임계값을 출력합니다.
-    #print("Positive Change Rate Threshold:", positive_threshold)
-    #print("Negative Change Rate Threshold:", negative_threshold)
     
 
+# '헌팅' 라벨을 부여하는 함수를 정의합니다.
 def label_hunting_multiple_of_two(df):
-    """ 헌팅' 라벨을 부여하는 함수를 정의
-    
-    """
     # 변화율 계산
-    df = rate_algorithms.calculating_rate_change(df,'TRO')
+    df=rate_algorithms.calculating_rate_change(df,'TRO')
     
     # 변화율 임계 값 라벨링
-    df = extract_rate_of_change_threshold(df)
+    df=extract_rate_of_change_threshold(df)
     
     df['Hunting'] = 0  # 초기에는 모든 지점에 대해 '헌팅'이 아님을 가정합니다.
     peaks_indices = df[df['Peak']].index
     valleys_indices = df[df['Valley']].index
     
-    # 모델 학습을 위한 피크 밸리 변수 생성 
-    df['PEAK_VALLEY_INDICES'] = 0 
-    df.loc[np.sort(np.concatenate((peaks_indices, valleys_indices))), 'PEAK_VALLEY_INDICES'] = 1
-
-    # 피크와 밸리가 번갈아 나타나는지 확인합니다.
+ # 피크와 밸리가 번갈아 나타나는지 확인합니다.
     sequence = []  # 번갈아 나타나는 피크와 밸리의 인덱스를 저장할 리스트
 
     # 피크와 밸리 인덱스를 번갈아가며 확인합니다.
@@ -94,4 +82,3 @@ def plot_hunting_label(df):
     # '헌팅' 라벨이 있는 인덱스를 출력합니다.
     hunting_indices = df[df['Hunting']==1].index.tolist()
     print("Indices with 'Hunting' label:", hunting_indices)
-

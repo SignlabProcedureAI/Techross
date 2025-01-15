@@ -3,8 +3,8 @@ import pandas as pd
 import os
 
 # module.healthchecker
-import stat_healthchecker.rate_of_change_algorithms as rate_algorithms
-import stat_healthchecker.apply_hunting as apply_hunting
+import HealthPipeline.src.stat_healthchecker.deprecated_modules.rate_of_change_algorithms as rate_algorithms
+import hunting_processor as StatHungting
 import stat_healthchecker.apply_time_offset as apply_time_offset
 
 # module.dataline
@@ -157,12 +157,12 @@ def label_data_points(data):
     data = give_tro_out_of_water_condition(data)
     
     # Hunting 라벨 
-    data = apply_hunting.label_hunting_multiple_of_two(data)
+    data = StatHungting.label_hunting_multiple_of_two(data)
     
     # Time Offset 라벨 
     data = apply_time_offset.classify_time_offset_label(data)
 
-    # 16. 변수명 변경
+    # 16. 변수명 변경 (삭제)
     data = data.rename({'Hunting':'HUNTING'},axis=1)
 
     return data

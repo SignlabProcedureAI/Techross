@@ -4,6 +4,8 @@ from  models_dataline import load_database
 import os
 from rate_change_manager import RateChangeProcessor
 from hunting_processor import ModelHunting
+from timeoffset_processor import TimeOffsetWithAutocorr
+from typing import Union, Tuple
 
 class TROFaultAlgorithm(BaseFaultAlgorithm):
     def __init__(self, data: pd.DataFrame):
@@ -60,7 +62,8 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         self.update_tro_condition()
         self.give_tro_out_of_water_condition()
         self.data = ModelHunting.label_hunting_multiple_of_two(self.data)
-        self.data, self.count = apply_time_offset.classify_time_offset_label(self.data) # 수정
+        time_offset_processor = TimeOffsetWithAutocorr(self.data)
+        self.data, self.count = time_offset_processor.classify_time_offset_label() 
 
 
     def apply_fault_label_statistics(self):
@@ -103,7 +106,7 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         self.group = self.catorize_health_score(self.group)
         load_database('signlab','tc_ai_fault_model_group', 'release', self.group)
 
-    def apply_tro_fault_detector(self):
+    def apply_tro_fault_detector(self,status) -> None:
         """ TRO 알고리즘 적용
         Returns: 오퍼레이션 실시간 데이터 자동적재, 오퍼레이션 그룹 자동적재
         """
@@ -115,11 +118,7 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
             'PEAK_VALLEY_INDICES','RE_CROSS_CORRELATION','CROSS_CORRELATION','TRO_NEG_COUNT','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING',
             'TIME_OFFSET','START_TIME','END_TIME','RUNNING_TIME']
             ]
-
         self.apply_fault_label_statistics()
-
-        return self.data, self.group
-
   
  
 

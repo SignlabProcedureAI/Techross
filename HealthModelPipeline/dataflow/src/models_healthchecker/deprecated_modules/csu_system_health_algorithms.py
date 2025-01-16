@@ -225,3 +225,4 @@ def load_model_from_pickle(file_path):
     print(f"모델이 {file_path}에서 성공적으로 불러와졌습니다.")
     return model
 
+

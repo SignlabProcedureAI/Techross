@@ -5,7 +5,7 @@ import os
 # module.healthchecker
 import HealthPipeline.src.stat_healthchecker.deprecated_modules.rate_of_change_algorithms as rate_algorithms
 import hunting_processor as StatHungting
-import stat_healthchecker.apply_time_offset as apply_time_offset
+import HealthPipeline.src.stat_healthchecker.deprecated_modules.apply_time_offset as apply_time_offset
 
 # module.dataline
 from stat_dataline.load_database import load_database

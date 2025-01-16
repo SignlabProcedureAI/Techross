@@ -4,16 +4,18 @@ from  stat_dataline import load_database
 import os
 from rate_change_manager import RateChangeProcessor
 from hunting_processor import StatHungting
+from timeoffset_processor import BaseTimeOffset
+from typing import Tuple
 
 class TROFaultAlgorithm(BaseFaultAlgorithm):
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame) -> None:
         """
         Args:
             data (pd.DataFrame): 처리할 데이터프레임
         """ 
         super().__init__(data)
 
-    def apply_tro_labeling(self):
+    def apply_tro_labeling(self) -> None:
         self.data = RateChangeProcessor.calculating_rate_change(self.data, 'TRO')
         self.data = RateChangeProcessor.calculating_rate_change(self.data, 'pred')
 
@@ -30,10 +32,10 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         self.update_tro_condition()
         self.give_tro_out_of_water_condition()
         self.data = StatHungting.label_hunting_multiple_of_two(self.data)
-        self.data, self.count = apply_time_offset.classify_time_offset_label(self.data) # 수정
+        time_offset_processor = BaseTimeOffset(self.data)
+        self.data = time_offset_processor.classify_time_offset_label() 
 
-
-    def apply_fault_label_statistics(self):
+    def apply_fault_label_statistics(self) -> None:
         """
         그룹화된 데이터의 통계를 계산하는 추상 메서드
         하위 클래스에서 통계 로직을 구현해야 함
@@ -54,7 +56,7 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
                                 ]
         load_database('signlab','tc_ai_fault_group', self.group)
 
-    def apply_tro_fault_detector(self):
+    def apply_tro_fault_detector(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """ TRO 알고리즘 적용
         Returns: 오퍼레이션 실시간 데이터 자동적재, 오퍼레이션 그룹 자동적재
         """

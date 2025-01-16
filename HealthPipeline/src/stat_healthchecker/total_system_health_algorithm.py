@@ -3,8 +3,8 @@ import numpy as np
 import time
 
 # module.healthchecker
-import stat_healthchecker.csu_system_health_algorithms as csu_algorithms
-import stat_healthchecker.sts_system_health_algorithms as sts_algorithms
+from csu_system_health import SimpleCsuSystemHealth 
+from sts_system_health import SimpleStsSystemHealth 
 import stat_healthchecker.fts_system_health_algorithms as fts_algorithms
 import stat_healthchecker.fmu_system_health_algorithms as fmu_algorithms
 from tro_fault_detector import TROFaultAlgorithm 
@@ -27,13 +27,12 @@ def time_decorator(func):
 @time_decorator
 def apply_system_health_algorithms_with_total(data, ship_id, op_index, section):
     
-    # 1 .CSU 건강도 적용
-    csu, csu_group = csu_algorithms.apply_system_health_algorithms_with_csu(data)
+    csu_instance = SimpleCsuSystemHealth(data)
+    csu, csu_group = csu_instance.apply_system_health_algorithms_with_csu(status=False)
 
-    # 2. STS 건강도 적용
-    sts, sts_group = sts_algorithms.apply_system_health_algorithms_with_sts(data)
+    sts_instance = SimpleStsSystemHealth(data)
+    sts, sts_group = sts_instance.apply_system_health_algorithms_with_sts(status=False)
 
-    # 3. TRO 불량 원인 적용
     fault_detector = TROFaultAlgorithm(data)
     tro, tro_group = fault_detector.apply_fault_algorithms()
     

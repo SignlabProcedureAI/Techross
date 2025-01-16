@@ -6,7 +6,7 @@ import pickle
 # module.healthchecker
 import HealthModelPipeline.dataflow.src.models_healthchecker.deprecated_modules.rate_of_change_algorithms as rate_algorithms
 import hunting_processor as ModelHunting
-import models_healthchecker.apply_time_offset as apply_time_offset
+import HealthModelPipeline.dataflow.src.models_healthchecker.deprecated_modules.apply_time_offset as apply_time_offset
 
 # module.dataline
 from models_dataline.load_database import load_database

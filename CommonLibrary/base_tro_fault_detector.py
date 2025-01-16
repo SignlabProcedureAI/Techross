@@ -10,7 +10,7 @@ class BaseFaultAlgorithm(ABC):
     TRO 센서 불량 탐지를 위한 베이스 클래스.
     공통 기능과 확장 가능한 구조를 제공합니다.
     """
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame) -> None:
         """
         Args:
          data (pd.DataFrame): 처리할 데이터프레임
@@ -84,14 +84,6 @@ class BaseFaultAlgorithm(ABC):
         self.data.dropna(inplace=True)
         self.data['slowly_label'] = self.data.apply(lambda x :DataUtility.classify_decline_slowly_label(x['Previous_TRO_NEG_COUNT'],x['TRO_NEG_COUNT']),axis=1)
         self.data = self.data.drop(columns='Previous_TRO_NEG_COUNT')
-
-    # @abstractmethod
-    # def label_faults(self,  data: pd.DataFrame) ->pd.DataFrame:
-    #     """
-    #     TRO 데이터의 라벨링을 수행하는 추상 메서드
-    #     하위 클래스에서 구체적인 라벨링 로직을 구현해야 함
-    #     """
-    #     pass
 
     @abstractmethod
     def apply_fault_label_statistics(self) -> pd.DataFrame:

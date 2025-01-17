@@ -51,7 +51,7 @@ class BaseStsSystemHealth(ABC):
         self.refine_frames()
         self.generate_health_score('STS')
         self._col_return()
-        self.apply_system_health_statistics_with_csu()
+        self.apply_system_health_statistics_with_sts()
         
         if status:
             pass

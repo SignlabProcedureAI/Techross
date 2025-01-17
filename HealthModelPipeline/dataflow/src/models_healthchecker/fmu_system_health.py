@@ -1,5 +1,5 @@
 import pandas as pd
-from CommonLibrary import BaseStsSystemHealth
+from CommonLibrary import BaseFmuSystemHealth
 import os
 import numpy as np
 from models_dataline import load_database
@@ -7,8 +7,9 @@ from rate_change_manager import RateChangeProcessor
 from sklearn.base import BaseEstimator
 from typing import Tuple
 import pickle
+import joblib
 
-class ModelStsSystemHealth(BaseStsSystemHealth):
+class ModelFmuSystemHealth(BaseFmuSystemHealth):
     def __init__(self, data: pd.DataFrame):
         super().__init__(data)
 
@@ -19,7 +20,6 @@ class ModelStsSystemHealth(BaseStsSystemHealth):
         self.start_date = first_row['START_TIME']
         self.end_date = first_row['END_TIME']
         self.running_time = first_row['RUNNING_TIME']
-
         self.op_type = first_row['OP_TYPE']
 
     def refine_frames(self) -> None:
@@ -27,38 +27,37 @@ class ModelStsSystemHealth(BaseStsSystemHealth):
         데이터 프레임 정제
         """
         columns = [
-                   'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX',
-                   'CSU','STS','FTS','FMU','CURRENT','TRO','RATE','VOLTAGE',
-                   'START_TIME','END_TIME','RUNNING_TIME'
+                    'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT','TRO','RATE','VOLTAGE',
+                    'START_TIME','END_TIME','RUNNING_TIME'
                     ]
         self.data = self.data[columns]
 
-    def apply_system_health_statistics_with_sts(self) -> None:
+    def apply_system_health_statistics_with_fmu(self) -> None:
         """ 
         그룹 통계 함수 적용
         """
         self.data = self.data[
             [
-           'SHIP_ID','OP_INDEX','DATA_INDEX','SECTION','CSU',
-           'FTS','FMU','CURRENT','TRO','STS','DIFF','THRESHOLD',
+            'SHIP_ID','OP_INDEX','DATA_INDEX','SECTION','CSU','STS','FTS','CURRENT','TRO','FMU','STANDARDIZE_FMU','THRESHOLD',
            'HEALTH_RATIO','HEALTH_TREND'
             ]
            ]
         self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).agg
         (
             {
-                'DATA_INDEX':'mean','CSU':'mean','FTS':'mean','FMU':'mean','CURRENT':'mean','TRO':'mean','STS':['min','mean','max'],'DIFF':['min','mean','max'],
-                'THRESHOLD':'mean','HEALTH_RATIO':'mean','HEALTH_TREND':'mean'
+            'DATA_INDEX':'mean','CSU':'mean','STS':'mean','FTS':'mean','CURRENT':'mean','TRO':'mean',
+            'FMU':['min','mean','max'],'STANDARDIZE_FMU':['min','mean','max'],
+            'THRESHOLD':'mean','HEALTH_RATIO':'mean','HEALTH_TREND':'mean'
             }
         )
         # 다중 인덱스된 컬럼을 단일 레벨로 평탄화
         self.group.columns = ['_'.join(col) for col in self.group.columns]
         self.group.columns = [
-                            'DATA_INDEX','CSU','FTS','FMU','CURRENT','TRO',
-                            'STS_MIN','STS_MEAN','STS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX',
-                            'THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
+                            'DATA_INDEX','CSU','STS','FTS','CURRENT','TRO','FMU_MIN','FMU_MEAN','FMU_MAX',
+                            'STANDARDIZE_FMU_MIN','STANDARDIZE_FMU_MEAN','STANDARDIZE_FMU_MAX','THRESHOLD',
+                            'HEALTH_RATIO','HEALTH_TREND'
                             ]
-        score, trend_score = self.calculate_group_health_score('STS')
+        score, trend_score = self.calculate_group_health_score('FMU')
         self.group.assign(
                     HEALTH_SCORE=score,
                     TREND_SCORE=trend_score,
@@ -69,12 +68,12 @@ class ModelStsSystemHealth(BaseStsSystemHealth):
                     ).reset_index(drop=True)
         self.group = self.group[
             [
-           'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','FTS','FMU','CURRENT','TRO',
-           'STS_MIN','STS_MEAN','STS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX','THRESHOLD','TREND_SCORE',
+           'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','STS','FTS','CURRENT','TRO',
+           'FMU_MIN','FMU_MEAN','FMU_MAX','STANDARDIZE_FMU_MIN','STANDARDIZE_FMU_MEAN','STANDARDIZE_FMU_MAX','THRESHOLD',
            'HEALTH_RATIO','HEALTH_TREND','HEALTH_SCORE','START_TIME','END_TIME','RUNNING_TIME'
             ]
                 ]
-        load_database('ecs_test','tc_ai_sts_system_health_group_v1.1.0', '200', self.group)
+        load_database('ecs_test','tc_ai_fmu_system_health_group_v1.1.0', '200', self.group)
 
         self.predict_stats_val()
         self.group = self.group[
@@ -86,36 +85,53 @@ class ModelStsSystemHealth(BaseStsSystemHealth):
         self.group = self.group.rename({'HEALTH_SCORE':'ACTUAL'}, axis=1)
         self.group['ACTUAL'] = np.round(self.group['ACTUAL'],2)
         self.group['PRED'] = np.round(self.group['PRED'],2)
-        load_database('signlab','tc_ai_sts_model_system_health_group', 'release', self.group)
+        load_database('signlab','tc_ai_fmu_model_system_health_group', 'release', self.group)
     
     def apply_calculating_rate_change(self) -> None:
-        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'STS')
+        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'CSU')
 
     def predict_stats_val(self) -> None:
-        sts_model_relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../models_model/sts_model_v2.0.0')
-        sts_model_path = os.path.abspath(sts_model_relative_path)
-        model = self.load_model_from_pickle(sts_model_path)
-        
-        X = self.group[['STS_MIN','STS_MEAN','STS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX','TREND_SCORE']]
+        fmu_model_relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../models_model/fmu_model_v2.0.0')
+        fmu_model_path = os.path.abspath(fmu_model_relative_path)
+        model = self.load_model_from_pickle(fmu_model_path)
+
+        X = self.group[['FMU_MIN','STANDARDIZE_FMU_MIN','STANDARDIZE_FMU_MEAN','STANDARDIZE_FMU_MAX']]
         self.group['PRED'] =  model.predict(X)
 
     def _col_return(self) -> None:
         position_columns = [
-                   'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','FTS','FMU','CURRENT','TRO','STS','DIFF',
+                   'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FTS','CURRENT','TRO','FMU','STANDARDIZE_FMU',
                     'THRESHOLD','HEALTH_RATIO','HEALTH_TREND','START_TIME','END_TIME','RUNNING_TIME'
-                            ]
+                    ]
         self.data = self.data[position_columns]                              
 
     def _format_return(self, adjusted_score: float, trend_score: float) -> Tuple[float,float]:
         return adjusted_score, trend_score
 
+    def _about_col_score_return(self):
+        position_columns = [
+                  'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT','TRO','RATE', 'VOLTAGE',
+                'START_TIME','END_TIME','RUNNING_TIME','STANDARDIZE_FMU','THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
+                    ]
+        self.data = self.data[position_columns]   
+
     def catorize_health_score(self) -> None:
         self.data['DEFECT_RISK_CATEGORY'] = 0
-        self.data.loc[self.data['HEALTH_SCORE']<=9, 'RISK'] = 'NORMAL'
-        self.data.loc[(self.data['HEALTH_SCORE']>9) & (self.data['HEALTH_SCORE']<=20), 'RISK'] = 'WARNING'
-        self.data.loc[(self.data['HEALTH_SCORE']>20) & (self.data['HEALTH_SCORE']<=50), 'RISK'] = 'RISK'
-        self.data.loc[self.data['HEALTH_SCORE']>50, 'RISK'] = 'DEFECT'
+        self.data.loc[self.data['HEALTH_SCORE']<=23, 'RISK'] = 'NORMAL'
+        self.data.loc[(self.data['HEALTH_SCORE']>23) & (self.data['HEALTH_SCORE']<=40), 'RISK'] = 'WARNING'
+        self.data.loc[(self.data['HEALTH_SCORE']>40) & (self.data['HEALTH_SCORE']<=80), 'RISK'] = 'RISK'
+        self.data.loc[self.data['HEALTH_SCORE']>80, 'RISK'] = 'DEFECT'
 
+    def normalize_series(self, data_series: pd.Series) -> pd.DataFrame:
+        """ 표준화/정규화 함수
+        """   
+        fmu_scaler_path = os.path.dirname(os.path.abspath(__file__))
+        scaler_dir = os.path.abspath(os.path.join(fmu_scaler_path, '../../../../HealthPipeline/data/fmu_standard_scaler'))
+        scaler =  joblib.load(fr'{scaler_dir}\\{self.ship_id}_scaler.joblib')
+        standardized_data = scaler.transform(data_series)
+        
+        return standardized_data
+    
     @staticmethod
     def load_model_from_pickle(file_path: str) -> BaseEstimator:
         """

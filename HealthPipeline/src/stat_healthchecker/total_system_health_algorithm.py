@@ -5,8 +5,8 @@ import time
 # module.healthchecker
 from csu_system_health import SimpleCsuSystemHealth 
 from sts_system_health import SimpleStsSystemHealth 
-import stat_healthchecker.fts_system_health_algorithms as fts_algorithms
-import stat_healthchecker.fmu_system_health_algorithms as fmu_algorithms
+import HealthPipeline.src.stat_healthchecker.deprecated_modules.fts_system_health_algorithms as fts_algorithms
+import HealthPipeline.src.stat_healthchecker.deprecated_modules.fmu_system_health_algorithms as fmu_algorithms
 from tro_fault_detector import TROFaultAlgorithm 
 import stat_healthchecker.current_system_health_algorithms as current_algorithms
 

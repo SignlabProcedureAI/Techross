@@ -1,5 +1,5 @@
 import pandas as pd
-from CommonLibrary import BaseStsSystemHealth
+from CommonLibrary import BaseFtsSystemHealth
 import os
 import numpy as np
 from models_dataline import load_database
@@ -8,9 +8,9 @@ from sklearn.base import BaseEstimator
 from typing import Tuple
 import pickle
 
-class ModelStsSystemHealth(BaseStsSystemHealth):
-    def __init__(self, data: pd.DataFrame):
-        super().__init__(data)
+class ModelFtsSystemHealth(BaseFtsSystemHealth):
+    def __init__(self, data: pd.DataFrame, ship_id: str, instance: str):
+        super().__init__(data, ship_id, instance)
 
         for col in ['DATA_TIME', 'START_TIME', 'END_TIME']:
             self.data[col] = pd.to_datetime(self.data[col])
@@ -33,32 +33,32 @@ class ModelStsSystemHealth(BaseStsSystemHealth):
                     ]
         self.data = self.data[columns]
 
-    def apply_system_health_statistics_with_sts(self) -> None:
+    def apply_system_health_statistics_with_fts(self) -> None:
         """ 
         그룹 통계 함수 적용
         """
         self.data = self.data[
             [
-           'SHIP_ID','OP_INDEX','DATA_INDEX','SECTION','CSU',
-           'FTS','FMU','CURRENT','TRO','STS','DIFF','THRESHOLD',
-           'HEALTH_RATIO','HEALTH_TREND'
+           'SHIP_ID','OP_INDEX','DATA_INDEX','SECTION',
+           'CSU','STS','FMU','CURRENT','TRO','FTS','DIFF',
+           'THRESHOLD', 'HEALTH_RATIO','HEALTH_TREND'
             ]
            ]
         self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).agg
         (
             {
-                'DATA_INDEX':'mean','CSU':'mean','FTS':'mean','FMU':'mean','CURRENT':'mean','TRO':'mean','STS':['min','mean','max'],'DIFF':['min','mean','max'],
-                'THRESHOLD':'mean','HEALTH_RATIO':'mean','HEALTH_TREND':'mean'
+                'DATA_INDEX':'mean','CSU':'mean','STS':'mean','FMU':'mean','CURRENT':'mean','TRO':'mean',
+                'FTS':['min','mean','max'],'DIFF':['min','mean','max'],'THRESHOLD':'mean','HEALTH_RATIO':'mean','HEALTH_TREND':'mean'
             }
         )
         # 다중 인덱스된 컬럼을 단일 레벨로 평탄화
         self.group.columns = ['_'.join(col) for col in self.group.columns]
         self.group.columns = [
-                            'DATA_INDEX','CSU','FTS','FMU','CURRENT','TRO',
-                            'STS_MIN','STS_MEAN','STS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX',
-                            'THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
+                           'DATA_INDEX','CSU','STS','FMU','CURRENT','TRO',
+                           'FTS_MIN','FTS_MEAN','FTS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX',
+                           'THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
                             ]
-        score, trend_score = self.calculate_group_health_score('STS')
+        score, trend_score = self.calculate_group_health_score('FTS')
         self.group.assign(
                     HEALTH_SCORE=score,
                     TREND_SCORE=trend_score,
@@ -69,40 +69,40 @@ class ModelStsSystemHealth(BaseStsSystemHealth):
                     ).reset_index(drop=True)
         self.group = self.group[
             [
-           'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','FTS','FMU','CURRENT','TRO',
-           'STS_MIN','STS_MEAN','STS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX','THRESHOLD','TREND_SCORE',
+          'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','STS','FMU','CURRENT','TRO',
+          'FTS_MIN','FTS_MEAN','FTS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX','THRESHOLD','TREND_SCORE',
            'HEALTH_RATIO','HEALTH_TREND','HEALTH_SCORE','START_TIME','END_TIME','RUNNING_TIME'
             ]
                 ]
-        load_database('ecs_test','tc_ai_sts_system_health_group_v1.1.0', '200', self.group)
+        load_database('ecs_test','tc_ai_fts_system_health_group_v1.1.0', '200', self.group)
 
         self.predict_stats_val()
         self.group = self.group[
             [
-                'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME'
+               'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME'
             ]
             ]
         self.group = self.catorize_health_score()
         self.group = self.group.rename({'HEALTH_SCORE':'ACTUAL'}, axis=1)
         self.group['ACTUAL'] = np.round(self.group['ACTUAL'],2)
         self.group['PRED'] = np.round(self.group['PRED'],2)
-        load_database('signlab','tc_ai_sts_model_system_health_group', 'release', self.group)
+        load_database('signlab','tc_ai_fts_model_system_health_group', 'release', self.group)
     
     def apply_calculating_rate_change(self) -> None:
-        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'STS')
+        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'FTS')
 
     def predict_stats_val(self) -> None:
-        sts_model_relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../models_model/sts_model_v2.0.0')
-        sts_model_path = os.path.abspath(sts_model_relative_path)
-        model = self.load_model_from_pickle(sts_model_path)
+        fts_model_relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../models_model/fts_model_v2.0.0')
+        fts_model_path = os.path.abspath(fts_model_relative_path)
+        model = self.load_model_from_pickle(fts_model_path)
         
-        X = self.group[['STS_MIN','STS_MEAN','STS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX','TREND_SCORE']]
+        X = self.group[['FTS_MIN','FTS_MEAN','FTS_MAX','DIFF_MIN','DIFF_MEAN','DIFF_MAX','TREND_SCORE']]
         self.group['PRED'] =  model.predict(X)
 
     def _col_return(self) -> None:
         position_columns = [
-                   'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','FTS','FMU','CURRENT','TRO','STS','DIFF',
-                    'THRESHOLD','HEALTH_RATIO','HEALTH_TREND','START_TIME','END_TIME','RUNNING_TIME'
+                 'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FMU','CURRENT','TRO','FTS','DIFF',
+                'THRESHOLD','HEALTH_RATIO','HEALTH_TREND','START_TIME','END_TIME','RUNNING_TIME'
                             ]
         self.data = self.data[position_columns]                              
 
@@ -111,10 +111,10 @@ class ModelStsSystemHealth(BaseStsSystemHealth):
 
     def catorize_health_score(self) -> None:
         self.data['DEFECT_RISK_CATEGORY'] = 0
-        self.data.loc[self.data['HEALTH_SCORE']<=9, 'RISK'] = 'NORMAL'
-        self.data.loc[(self.data['HEALTH_SCORE']>9) & (self.data['HEALTH_SCORE']<=20), 'RISK'] = 'WARNING'
-        self.data.loc[(self.data['HEALTH_SCORE']>20) & (self.data['HEALTH_SCORE']<=50), 'RISK'] = 'RISK'
-        self.data.loc[self.data['HEALTH_SCORE']>50, 'RISK'] = 'DEFECT'
+        self.data.loc[self.data['HEALTH_SCORE']<=13, 'RISK'] = 'NORMAL'
+        self.data.loc[(self.data['HEALTH_SCORE']>13) & (self.data['HEALTH_SCORE']<=40), 'RISK'] = 'WARNING'
+        self.data.loc[(self.data['HEALTH_SCORE']>40) & (self.data['HEALTH_SCORE']<=90), 'RISK'] = 'RISK'
+        self.data.loc[self.data['HEALTH_SCORE']>90, 'RISK'] = 'DEFECT'
 
     @staticmethod
     def load_model_from_pickle(file_path: str) -> BaseEstimator:

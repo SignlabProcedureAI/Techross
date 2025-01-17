@@ -1,17 +1,12 @@
-# basic
 import pandas as pd
 import numpy as np
-import pickle
-
-# class
 from typing import Tuple, Union
 from abc import ABC, abstractmethod
-
-# module
+import pickle
+from typing import Tuple, Union
 from base_rate_change_manager import DataUtility
 
-
-class BaseCsuSystemHealth(ABC):
+class BaseFtsSystemHealth(ABC):
     def __init__(self, data: pd.DataFrame) -> None:
         """
         데이터 초기화
@@ -23,7 +18,8 @@ class BaseCsuSystemHealth(ABC):
     def exceed_limit_line(self, col: str) -> int:
         limit = {
             'CSU': 45,
-            'STS' : 40
+            'STS' : 40,
+            'FTS' : 40
             }
         max_val = self.data[col].max()
         
@@ -35,7 +31,8 @@ class BaseCsuSystemHealth(ABC):
     def calculate_group_health_score(self, col: str) -> Union[Tuple[float,float], float]:
         threshold = {
             'CSU': 0.88,
-            'STS' : 1.18
+            'STS' : 1.18,
+            'FTS': 1.75
                 }
         
         start_value = self.data.iloc[0][col]
@@ -49,21 +46,20 @@ class BaseCsuSystemHealth(ABC):
 
         return self._format_return(adjusted_score, trend_score)
     
-    def apply_system_health_algorithms_with_csu(self, status: bool) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
+    def apply_system_health_algorithms_with_fts(self, status) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
         """ 
-        CSU 건강도 알고리즘 적용 
+        FTS 건강도 알고리즘 적용 
         """
         self.refine_frames()
-        self.generate_health_score('CSU')
+        self.generate_health_score('FTS')
         self._col_return()
-        self.apply_system_health_statistics_with_csu()
-
+        self.apply_system_health_statistics_with_fts()
+        
         if status:
             pass
         else: 
             return self.data, self.group
 
-    
     def generate_health_score(self, col: str) -> None:
         """
         시스템 건강 점수를 생성하는 함수.
@@ -80,18 +76,16 @@ class BaseCsuSystemHealth(ABC):
         self.apply_calculating_rate_change(col)
 
         self.data.dropna(inplace=True)
-        self.data['THRESHOLD'] = 0.18
+        self.data['THRESHOLD'] = 0.22
         self.data[f'{col}_Ratio'] = self.data[f'{col}_Ratio'].abs()
         self.data['HEALTH_RATIO'] = (self.data[f'{col}_Ratio'] / self.data['THRESHOLD']).abs() * 10
         self.data = DataUtility.generate_rolling_mean(self.data, col, window=5)
 
         self.data.columns = [
-            'SHIP_ID', 'OP_INDEX', 'SECTION', 'OP_TYPE', 'DATA_TIME', 'DATA_INDEX',
-            'CSU', 'STS', 'FTS', 'FMU', 'CURRENT', 'TRO', 'RATE', 'VOLTAGE',
-            'START_TIME', 'END_TIME', 'RUNNING_TIME', 'CSU_Ratio', 'THRESHOLD',
-            'HEALTH_RATIO', 'HEALTH_TREND'
+           'SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT','TRO',
+            'FTS_Ratio','THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
                 ]
-        self.data.rename(columns={'CSU_Ratio': 'DIFF'}, inplace=True)
+        self.data.rename(columns={'FTS_Ratio': 'DIFF'}, inplace=True)
         self.data['HEALTH_RATIO'] = self.data['HEALTH_RATIO'].apply(lambda x: min(100, x))
 
     @abstractmethod
@@ -124,4 +118,3 @@ class BaseCsuSystemHealth(ABC):
         반환값 형식을 정의합니다 (자식 클래스에서 구현 필요)
         """
         pass
-    

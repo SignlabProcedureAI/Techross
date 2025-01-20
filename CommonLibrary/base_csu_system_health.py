@@ -1,10 +1,10 @@
 # basic
 import pandas as pd
-import numpy as np
-import pickle
+
+# type hiting
+from typing import Tuple, Union
 
 # class
-from typing import Tuple, Union
 from abc import ABC, abstractmethod
 
 # module
@@ -16,11 +16,21 @@ class BaseCsuSystemHealth(ABC):
         """
         데이터 초기화
         
-        :param data: 입력 데이터프레임
+         Args: 
+          data: 입력 데이터프레임
         """
         self.data = data
 
     def exceed_limit_line(self, col: str) -> int:
+        """
+        특정 열의 최대값이 제한 값을 초과하는지 확인하는 함수.
+
+        Args:
+            col (str): 확인할 열 이름 (예: 'CSU', 'STS').
+
+        Returns:
+            int: 최대값이 제한 값을 초과하면 100, 그렇지 않으면 0.
+        """
         limit = {
             'CSU': 45,
             'STS' : 40
@@ -33,6 +43,16 @@ class BaseCsuSystemHealth(ABC):
             return 0
     
     def calculate_group_health_score(self, col: str) -> Union[Tuple[float,float], float]:
+        """
+        그룹의 건강 점수를 계산하는 함수.
+
+        Args:
+            col (str): 변화율 계산 및 제한 값 확인에 사용할 열 이름 (예: 'CSU', 'STS').
+
+        Returns:
+            Union[Tuple[float, float], float]: 조정된 건강 점수와 트렌드 점수의 튜플,
+            또는 특정 형식에 따라 단일 점수.
+        """
         threshold = {
             'CSU': 0.88,
             'STS' : 1.18
@@ -50,8 +70,16 @@ class BaseCsuSystemHealth(ABC):
         return self._format_return(adjusted_score, trend_score)
     
     def apply_system_health_algorithms_with_csu(self, status: bool) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
-        """ 
-        CSU 건강도 알고리즘 적용 
+        """
+        CSU 건강도 알고리즘을 적용하는 함수.
+
+        Args:
+            status (bool): 결과를 반환할지 여부를 결정하는 플래그. 
+                          True[model]일 경우 반환값 없음, False일 경우 데이터프레임 반환.
+
+        Returns:
+            Union[None, Tuple[pd.DataFrame, pd.DataFrame]]: 
+                status가 False인 경우, 처리된 데이터프레임(`self.data`)과 그룹 데이터프레임(`self.group`)의 튜플.
         """
         self.refine_frames()
         self.generate_health_score('CSU')
@@ -110,7 +138,7 @@ class BaseCsuSystemHealth(ABC):
     @abstractmethod
     def _format_return(self, adjusted_score: float, trend_score: float):
         """
-        반환값 형식을 정의합니다 (자식 클래스에서 구현 필요).
+        반환값 형식을 정의합니다 (자식 클래스에서 구현 필요)
 
         Args:
         - autocorr: 자기상관 배열

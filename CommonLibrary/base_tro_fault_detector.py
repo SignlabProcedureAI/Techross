@@ -1,8 +1,11 @@
-from abc import ABC, abstractmethod
+# basic
 import pandas as pd
 import os
-import numpy as np
-import pickle
+
+# class
+from abc import ABC, abstractmethod
+
+# module
 from .base_rate_change_manager import DataUtility 
 
 class BaseFaultAlgorithm(ABC):
@@ -12,18 +15,27 @@ class BaseFaultAlgorithm(ABC):
     """
     def __init__(self, data: pd.DataFrame) -> None:
         """
+        TRO 시스템 건강도를 모델링하는 클래스의 초기화 메서드.
+
         Args:
-         data (pd.DataFrame): 처리할 데이터프레임
+            data (pd.DataFrame): 초기화에 사용할 입력 데이터프레임.
+
+        Attributes:
+            start_date (datetime): 데이터의 첫 행에서 추출한 시작 시간.
+            end_date (datetime): 데이터의 첫 행에서 추출한 종료 시간.
+            running_time (float): 데이터의 첫 행에서 추출한 실행 시간.
+            op_type (str): 데이터의 첫 행에서 추출한 운영 유형.
         """
-        self.data['DATA_TIME'] = pd.to_datetime(self.data['DATA_TIME'])
-        self.data['START_TIME'] = pd.to_datetime(self.data['START_TIME'])
-        self.data['END_TIME'] = pd.to_datetime(self.data['END_TIME'])
+        self.data = data
 
-        self.start_date = self.data.iloc[0]['START_TIME']
-        self.end_date = self.data.iloc[0]['END_TIME']
-        self.running_time = self.data.iloc[0]['RUNNING_TIME']
-        self.op_type = self.data.iloc[0]['OP_TYPE']
+        for col in ['DATA_TIME', 'START_TIME', 'END_TIME']:
+            self.data[col] = pd.to_datetime(self.data[col])
 
+        first_row = self.data.iloc[0]
+        self.start_date = first_row['START_TIME']
+        self.end_date = first_row['END_TIME']
+        self.running_time = first_row['RUNNING_TIME']
+        self.op_type = first_row['OP_TYPE']
 
     def refine_frames(self) -> None:
         """

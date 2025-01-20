@@ -8,12 +8,9 @@ from sklearn.base import BaseEstimator
 import pickle
 
 class SimpleStsSystemHealth(BaseStsSystemHealth):
-    def __init__(self, data: pd.DataFrame):
-        super().__init__(data)
-
     def refine_frames(self):
         """
-        데이터 프레임 정제
+        데이터 프레임에서 필요한 열만 선택하여 정제하는 함수
         """
         columns = [
                     'SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT','TRO'
@@ -22,7 +19,7 @@ class SimpleStsSystemHealth(BaseStsSystemHealth):
 
     def apply_system_health_statistics_with_sts(self) -> None:
         """ 
-        그룹 통계 함수 적용
+        STS와 관련된 그룹 통계와 건강 점수를 계산하여 데이터 프레임에 적용하는 함수
         """
         self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).mean()
         score, trend_score = self.calculate_group_health_score('STS')
@@ -35,10 +32,16 @@ class SimpleStsSystemHealth(BaseStsSystemHealth):
                 ]
 
     def apply_calculating_rate_change(self) -> None:
+        """
+        STS 열에 대한 변화율을 계산하여 데이터에 적용하는 함수. 
+        """
         self.data = RateChangeProcessor.calculate_rate_change(self.data, 'STS')
 
 
     def _col_return(self) -> pd.DataFrame:
+        """
+        필요한 열만 선택하여 반환하는 함수. 
+        """
         position_columns = [
                  'SHIP_ID','OP_INDEX','SECTION','DATA_INDEX','STS','DIFF',
                 'THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
@@ -46,4 +49,7 @@ class SimpleStsSystemHealth(BaseStsSystemHealth):
         self.data = self.data[position_columns]          
 
     def _format_return(self, adjusted_score: float, trend_score: float) -> float:
+        """
+        포멧 기준 조정된 점수를 반환하는 함수
+        """
         return adjusted_score

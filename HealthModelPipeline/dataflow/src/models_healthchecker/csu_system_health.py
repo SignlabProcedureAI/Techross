@@ -1,17 +1,34 @@
+# basic
 import pandas as pd
-from CommonLibrary import BaseCsuSystemHealth
-import os
 import numpy as np
-from models_dataline import load_database
-from rate_change_manager import RateChangeProcessor
+import os
+import pickle
+
+# type hiting
 from sklearn.base import BaseEstimator
 from typing import Tuple
-import pickle
+
+# module
+from CommonLibrary import BaseCsuSystemHealth
+from models_dataline import load_database
+from rate_change_manager import RateChangeProcessor
 
 class ModelCsuSystemHealth(BaseCsuSystemHealth):
     def __init__(self, data: pd.DataFrame):
-        super().__init__(data)
+        """
+        CSU 시스템 건강도를 모델링하는 클래스의 초기화 메서드.
 
+        Args:
+            data (pd.DataFrame): 초기화에 사용할 입력 데이터프레임.
+
+        Attributes:
+            start_date (datetime): 데이터의 첫 행에서 추출한 시작 시간.
+            end_date (datetime): 데이터의 첫 행에서 추출한 종료 시간.
+            running_time (float): 데이터의 첫 행에서 추출한 실행 시간.
+            op_type (str): 데이터의 첫 행에서 추출한 운영 유형.
+        """
+        self.data = data
+        
         for col in ['DATA_TIME', 'START_TIME', 'END_TIME']:
             self.data[col] = pd.to_datetime(self.data[col])
 
@@ -23,7 +40,7 @@ class ModelCsuSystemHealth(BaseCsuSystemHealth):
 
     def refine_frames(self) -> None:
         """
-        데이터 프레임 정제
+        데이터 프레임에서 필요한 열만 선택하여 정제하는 함수
         """
         columns = [
                     'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT','TRO','RATE','VOLTAGE',
@@ -33,7 +50,7 @@ class ModelCsuSystemHealth(BaseCsuSystemHealth):
 
     def apply_system_health_statistics_with_csu(self) -> None:
         """ 
-        그룹 통계 함수 적용
+        CSU와 관련된 그룹 통계와 건강 점수를 계산하여 데이터 프레임에 적용하는 함수
         """
         self.data = self.data[
             [
@@ -85,9 +102,19 @@ class ModelCsuSystemHealth(BaseCsuSystemHealth):
         load_database('signlab','tc_ai_csu_model_system_health_group', 'release', self.group)
     
     def apply_calculating_rate_change(self) -> None:
+        """
+        CSU 열에 대한 변화율을 계산하여 데이터에 적용하는 함수. 
+        """
         self.data = RateChangeProcessor.calculate_rate_change(self.data, 'CSU')
 
     def predict_stats_val(self) -> None:
+        """
+        통계 데이터를 사용하여 예측 값을 계산하는 함수.
+
+        Description:
+            - 저장된 CSU 모델을 로드하여 데이터의 통계 값을 기반으로 예측을 수행합니다.
+            - 예측 결과는 그룹 데이터 프레임(self.group)에 'PRED' 열로 추가됩니다.
+        """
         csu_model_relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../models_model/csu_model_v2.0.0')
         csu_model_path = os.path.abspath(csu_model_relative_path)
         model = self.load_model_from_pickle(csu_model_path)
@@ -96,6 +123,9 @@ class ModelCsuSystemHealth(BaseCsuSystemHealth):
         self.group['PRED'] =  model.predict(X)
 
     def _col_return(self) -> None:
+        """
+        필요한 열만 선택하여 반환하는 함수. 
+        """
         position_columns = [
                     'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','STS','FTS','FMU','CURRENT','TRO','CSU','DIFF',
                     'THRESHOLD','HEALTH_RATIO','HEALTH_TREND','START_TIME','END_TIME','RUNNING_TIME'
@@ -103,9 +133,19 @@ class ModelCsuSystemHealth(BaseCsuSystemHealth):
         self.data = self.data[position_columns]                              
 
     def _format_return(self, adjusted_score: float, trend_score: float) -> Tuple[float,float]:
+        """
+        포멧 기준 조정된 점수를 반환하는 함수.
+        """
         return adjusted_score, trend_score
 
     def catorize_health_score(self) -> None:
+        """
+        건강 점수를 기반으로 결함 위험 카테고리를 분류하는 함수
+
+        Description:
+            - HEALTH_SCORE 값에 따라 각 데이터 포인트를 'NORMAL', 'WARNING', 'RISK', 'DEFECT' 카테고리로 분류합니다
+            - 분류 결과는 'RISK' 열에 저장됩니다.
+        """
         self.data['DEFECT_RISK_CATEGORY'] = 0
         self.data.loc[self.data['HEALTH_SCORE']<=14, 'RISK'] = 'NORMAL'
         self.data.loc[(self.data['HEALTH_SCORE']>15) & (self.data['HEALTH_SCORE']<=40), 'RISK'] = 'WARNING'

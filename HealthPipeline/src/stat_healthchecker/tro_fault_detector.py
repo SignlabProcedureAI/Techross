@@ -1,21 +1,29 @@
-from CommonLibrary import BaseFaultAlgorithm
+
+# basic
 import pandas as pd
+
+# type hiting
+from typing import Tuple
+
+# module
+from CommonLibrary import BaseFaultAlgorithm
 from  stat_dataline import load_database
-import os
 from rate_change_manager import RateChangeProcessor
 from hunting_processor import StatHungting
 from timeoffset_processor import BaseTimeOffset
-from typing import Tuple
 
 class TROFaultAlgorithm(BaseFaultAlgorithm):
-    def __init__(self, data: pd.DataFrame) -> None:
-        """
-        Args:
-            data (pd.DataFrame): 처리할 데이터프레임
-        """ 
-        super().__init__(data)
-
     def apply_tro_labeling(self) -> None:
+        """
+        TRO 데이터를 라벨링하고 추가 계산 및 조건을 적용하는 함수.
+
+        Steps:
+            1. TRO 및 PRED 열의 변화율 계산.
+            2. 필요한 열만 선택하여 데이터 정리.
+            3. TRO 음수 개수 계산 및 자동 라벨링 적용.
+            4. TRO 조건 업데이트 및 추가 조건 설정.
+            5. 헌팅 라벨 및 시간 오프셋 라벨링 적용.
+        """
         self.data = RateChangeProcessor.calculating_rate_change(self.data, 'TRO')
         self.data = RateChangeProcessor.calculating_rate_change(self.data, 'pred')
 
@@ -37,8 +45,13 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
 
     def apply_fault_label_statistics(self) -> None:
         """
-        그룹화된 데이터의 통계를 계산하는 추상 메서드
-        하위 클래스에서 통계 로직을 구현해야 함
+        그룹화된 데이터의 통계를 계산하여 저장하는 함수.
+
+        Steps:
+            1. 데이터를 그룹화하여 라벨링 통계 계산.
+            2. 추가 메타데이터(시작 시간, 종료 시간, 실행 시간, 작업 유형) 추가.
+            3. 필요한 열만 선택하여 데이터 정리.
+            4. 결과를 데이터베이스에 저장.
         """
         self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).agg(
                                                     {
@@ -57,8 +70,20 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         load_database('signlab','tc_ai_fault_group', self.group)
 
     def apply_tro_fault_detector(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """ TRO 알고리즘 적용
-        Returns: 오퍼레이션 실시간 데이터 자동적재, 오퍼레이션 그룹 자동적재
+        """
+        TRO 알고리즘을 적용하여 실시간 데이터와 그룹 데이터를 반환하는 함수.
+
+        Steps:
+            1. 데이터 프레임 정제.
+            2. TRO 값 예측 및 라벨링.
+            3. 실시간 데이터의 필요한 열 선택.
+            4. 그룹화된 통계 계산.
+            5. 그룹 데이터 정리 후 반환.
+
+        Returns:
+            Tuple[pd.DataFrame, pd.DataFrame]:
+                - 실시간 데이터 (`self.data`): 정제된 실시간 데이터.
+                - 그룹 데이터 (`self.group`): 그룹화된 통계 데이터.
         """
         self.refine_frames()
         self.predict_tro_val()

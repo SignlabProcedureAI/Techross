@@ -1,16 +1,33 @@
+# basic
 import pandas as pd
-from CommonLibrary import BaseFtsSystemHealth
 import os
 import numpy as np
-from models_dataline import load_database
-from rate_change_manager import RateChangeProcessor
+import pickle
+
+# type hiting
 from sklearn.base import BaseEstimator
 from typing import Tuple
-import pickle
+
+# module
+from models_dataline import load_database
+from rate_change_manager import RateChangeProcessor
+from CommonLibrary import BaseFtsSystemHealth
 
 class ModelFtsSystemHealth(BaseFtsSystemHealth):
     def __init__(self, data: pd.DataFrame, ship_id: str, instance: str):
-        super().__init__(data, ship_id, instance)
+        """
+        FTS 시스템 건강도를 모델링하는 클래스의 초기화 메서드.
+
+        Args:
+            data (pd.DataFrame): 초기화에 사용할 입력 데이터프레임.
+
+        Attributes:
+            start_date (datetime): 데이터의 첫 행에서 추출한 시작 시간.
+            end_date (datetime): 데이터의 첫 행에서 추출한 종료 시간.
+            running_time (float): 데이터의 첫 행에서 추출한 실행 시간.
+            op_type (str): 데이터의 첫 행에서 추출한 운영 유형.
+        """
+        self.data = data
 
         for col in ['DATA_TIME', 'START_TIME', 'END_TIME']:
             self.data[col] = pd.to_datetime(self.data[col])
@@ -24,7 +41,7 @@ class ModelFtsSystemHealth(BaseFtsSystemHealth):
 
     def refine_frames(self) -> None:
         """
-        데이터 프레임 정제
+        데이터 프레임에서 필요한 열만 선택하여 정제하는 함수
         """
         columns = [
                    'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX',
@@ -35,7 +52,7 @@ class ModelFtsSystemHealth(BaseFtsSystemHealth):
 
     def apply_system_health_statistics_with_fts(self) -> None:
         """ 
-        그룹 통계 함수 적용
+        FTS와 관련된 그룹 통계와 건강 점수를 계산하여 데이터 프레임에 적용하는 함수
         """
         self.data = self.data[
             [
@@ -89,9 +106,19 @@ class ModelFtsSystemHealth(BaseFtsSystemHealth):
         load_database('signlab','tc_ai_fts_model_system_health_group', 'release', self.group)
     
     def apply_calculating_rate_change(self) -> None:
+        """
+        FTS 열에 대한 변화율을 계산하여 데이터에 적용하는 함수. 
+        """
         self.data = RateChangeProcessor.calculate_rate_change(self.data, 'FTS')
 
     def predict_stats_val(self) -> None:
+        """
+        통계 데이터를 사용하여 예측 값을 계산하는 함수.
+
+        Description:
+            - 저장된 FTS 모델을 로드하여 데이터의 통계 값을 기반으로 예측을 수행합니다.
+            - 예측 결과는 그룹 데이터 프레임(self.group)에 'PRED' 열로 추가됩니다.
+        """
         fts_model_relative_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../models_model/fts_model_v2.0.0')
         fts_model_path = os.path.abspath(fts_model_relative_path)
         model = self.load_model_from_pickle(fts_model_path)
@@ -100,6 +127,9 @@ class ModelFtsSystemHealth(BaseFtsSystemHealth):
         self.group['PRED'] =  model.predict(X)
 
     def _col_return(self) -> None:
+        """
+        필요한 열만 선택하여 반환하는 함수. 
+        """
         position_columns = [
                  'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FMU','CURRENT','TRO','FTS','DIFF',
                 'THRESHOLD','HEALTH_RATIO','HEALTH_TREND','START_TIME','END_TIME','RUNNING_TIME'
@@ -107,9 +137,19 @@ class ModelFtsSystemHealth(BaseFtsSystemHealth):
         self.data = self.data[position_columns]                              
 
     def _format_return(self, adjusted_score: float, trend_score: float) -> Tuple[float,float]:
+        """
+        포멧 기준 조정된 점수를 반환하는 함수.
+        """
         return adjusted_score, trend_score
 
     def catorize_health_score(self) -> None:
+        """
+        건강 점수를 기반으로 결함 위험 카테고리를 분류하는 함수
+
+        Description:
+            - HEALTH_SCORE 값에 따라 각 데이터 포인트를 'NORMAL', 'WARNING', 'RISK', 'DEFECT' 카테고리로 분류합니다
+            - 분류 결과는 'RISK' 열에 저장됩니다.
+        """
         self.data['DEFECT_RISK_CATEGORY'] = 0
         self.data.loc[self.data['HEALTH_SCORE']<=13, 'RISK'] = 'NORMAL'
         self.data.loc[(self.data['HEALTH_SCORE']>13) & (self.data['HEALTH_SCORE']<=40), 'RISK'] = 'WARNING'

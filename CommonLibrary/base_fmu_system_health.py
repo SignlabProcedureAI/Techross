@@ -1,34 +1,54 @@
+# basic
 import pandas as pd
-import numpy as np
+
+# type hiting
 from typing import Tuple, Union
+
+# class
 from abc import ABC, abstractmethod
-import pickle
-from typing import Tuple, Union
+
+# module
 from base_rate_change_manager import DataUtility
-import os
-import joblib
+
 
 class BaseFmuSystemHealth(ABC):
     def __init__(self, data: pd.DataFrame, ship_id: str) -> None:
         """
         데이터 초기화
         
-        :param data: 입력 데이터프레임
+        Args: 
+          data: 입력 데이터프레임
         """
         self.data = data
         self.ship_id = ship_id
 
     def calculate_group_health_score(self) -> int:
-            """ 해당 센서 추세를 이용한 건강도 점수 반영
-            """
-            filtered_data = self.data[self.data['DATA_INDEX']>=30]
-            health_score = filtered_data['HEALTH_RATIO'].max()
-            
-            return health_score
+        """
+        그룹의 건강 점수를 계산하는 함수.
+
+        Args:
+            col (str): 변화율 계산 및 제한 값 확인에 사용할 열 이름 (예: 'CSU', 'STS', 'FMU').
+
+        Returns:
+            Union[Tuple[float, float], float]: 조정된 건강 점수와 트렌드 점수의 튜플,
+            또는 특정 형식에 따라 단일 점수.
+        """
+        filtered_data = self.data[self.data['DATA_INDEX']>=30]
+        health_score = filtered_data['HEALTH_RATIO'].max()
+        
+        return health_score
     
-    def apply_system_health_algorithms_with_fts(self, status) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
-        """ 
-        FTS 건강도 알고리즘 적용 
+    def apply_system_health_algorithms_with_fmu(self, status) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
+        """
+        FMU 건강도 알고리즘을 적용하는 함수.
+
+        Args:
+            status (bool): 결과를 반환할지 여부를 결정하는 플래그. 
+                          True[model]일 경우 반환값 없음, False일 경우 데이터프레임 반환.
+
+        Returns:
+            Union[None, Tuple[pd.DataFrame, pd.DataFrame]]: 
+                status가 False인 경우, 처리된 데이터프레임(`self.data`)과 그룹 데이터프레임(`self.group`)의 튜플.
         """
         self.refine_frames()
         self.generate_health_score('FMU', self.ship_id)
@@ -36,16 +56,20 @@ class BaseFmuSystemHealth(ABC):
         self.apply_system_health_statistics_with_fts()
         
         if status:
-            pass
+            pass 
         else: 
             return self.data, self.group
-
+        
     def generate_health_score(self, col: str) -> None:
         """
         시스템 건강 점수를 생성하는 함수.
 
         Args:
+            data: 입력 데이터프레임
             col: 변화율 계산에 사용할 열 이름
+
+        Returns: 
+            pd.DataFrame: 건강 점수가 포함된 데이터프레임
         """
         self.data['STANDARDIZE_FMU'] = self.normalize_series(self[[col]], self.ship_id)
         self.data['THRESHOLD'] = 1.96

@@ -2,10 +2,13 @@
 import pandas as pd
 import numpy as np
 
+# type hinting
+from typing import Union, Tuple
+
 # module
-from CommonLibrary import BaseCurrentSystemHealth
+from base import BaseCurrentSystemHealth
 from stat_dataline import load_database
-from rate_change_manager import RateChangeProcessor
+from .rate_change_manager import RateChangeProcessor
 
 class SimpleCurrentSystemHealth(BaseCurrentSystemHealth):
     def refine_frames(self):
@@ -22,14 +25,15 @@ class SimpleCurrentSystemHealth(BaseCurrentSystemHealth):
         CUREENT와 관련된 그룹 통계와 건강 점수를 계산하여 데이터 프레임에 적용하는 함수
         """
         self.data = self.data[self.data['DATA_INDEX'] >=30]
-        self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).mean()['ELECTRODE_EFFICIENCY']
-        self.group.assign(
+        self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).mean()['ELECTRODE_EFFICIENCY'].to_frame().reset_index()
+        self.group = self.group.assign(
                     START_TIME=self.start_date,
                     END_TIME=self.end_date,
                     RUNNING_TIME=self.running_time,
                     OP_TYPE=self.op_type
-                    ).reset_index(drop=True)
-        load_database('signlab', 'tc_ai_current_system_health_group', self.group)
+                    )
+        # load_database('signlab', 'tc_ai_current_system_health_group', self.group)
+        load_database.load_database('ecs_test', 'test_tc_ai_current_system_health_group', self.group)
 
     def apply_calculating_rate_change(self) -> None:
         """
@@ -54,7 +58,7 @@ class SimpleCurrentSystemHealth(BaseCurrentSystemHealth):
         """
         return adjusted_score
     
-    def apply_system_health_algorithms_with_current(self):
+    def apply_system_health_algorithms_with_current(self, status: bool) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
         """ CURRENT 건강도 알고리즘 적용 
         Args: 
         선박 이름, 오퍼레이션 번호, 섹션 번호
@@ -74,10 +78,11 @@ class SimpleCurrentSystemHealth(BaseCurrentSystemHealth):
         
         self.data['ELECTRODE_EFFICIENCY'] = np.round(self.data['ELECTRODE_EFFICIENCY'],2)
 
-        self.group = self.apply_system_health_statistics_with_current()
+        self.apply_system_health_statistics_with_current()
         self.data = self.data[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','ELECTRODE_EFFICIENCY']]
 
         # 9. 자동 적재
         # load_database('signlab','tc_ai_current_system_health', sensor_data)
 
-        return self.data, self.group
+        if not status:
+            return self.data, self.group

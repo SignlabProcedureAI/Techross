@@ -1,6 +1,6 @@
 import pandas as pd
-from CommonLibrary import BaseHunting
-from rate_change_manager import RateChangeProcessor
+from base import BaseHunting
+from .rate_change_manager import RateChangeProcessor
 
 class StatHungting(BaseHunting):
     @staticmethod
@@ -8,5 +8,5 @@ class StatHungting(BaseHunting):
         """
         StatHunting 전용 변화율 계산
         """
-        return RateChangeProcessor.calculating_rate_change(df, 'TRO')
+        return RateChangeProcessor.calculate_rate_change(df, 'TRO')
         

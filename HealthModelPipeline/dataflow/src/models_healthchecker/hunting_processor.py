@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from CommonLibrary import BaseHunting
-from rate_change_manager import RateChangeProcessor
+from base import BaseHunting
+from .rate_change_manager import RateChangeProcessor
 
 class ModelHunting(BaseHunting):
     @staticmethod
@@ -12,7 +12,7 @@ class ModelHunting(BaseHunting):
         return RateChangeProcessor.calculating_rate_change(df, 'TRO')
     
     @staticmethod
-    def add_custom_logic(df: pd.Dataframe) -> pd.DataFrame:
+    def add_custom_logic(df: pd.DataFrame) -> pd.DataFrame:
         """
         추가 로직: PEAK_VALLEY_INDICES 생성
         """

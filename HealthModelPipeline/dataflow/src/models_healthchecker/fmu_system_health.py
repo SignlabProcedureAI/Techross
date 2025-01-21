@@ -10,9 +10,9 @@ from sklearn.base import BaseEstimator
 from typing import Tuple
 
 # module
-from CommonLibrary import BaseFmuSystemHealth
+from base import BaseFmuSystemHealth
 from models_dataline import load_database
-from rate_change_manager import RateChangeProcessor
+from .rate_change_manager import RateChangeProcessor
 
 class ModelFmuSystemHealth(BaseFmuSystemHealth):
     def __init__(self, data: pd.DataFrame):
@@ -59,8 +59,7 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
            'HEALTH_RATIO','HEALTH_TREND'
             ]
            ]
-        self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).agg
-        (
+        self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).agg(
             {
             'DATA_INDEX':'mean','CSU':'mean','STS':'mean','FTS':'mean','CURRENT':'mean','TRO':'mean',
             'FMU':['min','mean','max'],'STANDARDIZE_FMU':['min','mean','max'],
@@ -75,14 +74,14 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
                             'HEALTH_RATIO','HEALTH_TREND'
                             ]
         score, trend_score = self.calculate_group_health_score('FMU')
-        self.group.assign(
+        self.group = self.group.assign(
                     HEALTH_SCORE=score,
                     TREND_SCORE=trend_score,
                     START_TIME=self.start_date,
                     END_TIME=self.end_date,
                     RUNNING_TIME=self.running_time,
                     OP_TYPE=self.op_type
-                    ).reset_index(drop=True)
+                    ).reset_index()
         self.group = self.group[
             [
            'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','CSU','STS','FTS','CURRENT','TRO',
@@ -90,7 +89,7 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
            'HEALTH_RATIO','HEALTH_TREND','HEALTH_SCORE','START_TIME','END_TIME','RUNNING_TIME'
             ]
                 ]
-        load_database('ecs_test','tc_ai_fmu_system_health_group_v1.1.0', '200', self.group)
+        load_database('ecs_test','test_tc_ai_fmu_system_health_group_v1.1.0', '200', self.group)
 
         self.predict_stats_val()
         self.group = self.group[
@@ -102,7 +101,8 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
         self.group = self.group.rename({'HEALTH_SCORE':'ACTUAL'}, axis=1)
         self.group['ACTUAL'] = np.round(self.group['ACTUAL'],2)
         self.group['PRED'] = np.round(self.group['PRED'],2)
-        load_database('signlab','tc_ai_fmu_model_system_health_group', 'release', self.group)
+        # load_database('signlab','tc_ai_fmu_model_system_health_group', 'release', self.group)
+        load_database('ecs_test','test_tc_ai_fmu_model_system_health_group', '200', self.group)
     
     def apply_calculating_rate_change(self) -> None:
         """
@@ -158,11 +158,11 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
             - HEALTH_SCORE 값에 따라 각 데이터 포인트를 'NORMAL', 'WARNING', 'RISK', 'DEFECT' 카테고리로 분류합니다
             - 분류 결과는 'RISK' 열에 저장됩니다.
         """
-        self.data['DEFECT_RISK_CATEGORY'] = 0
-        self.data.loc[self.data['HEALTH_SCORE']<=23, 'RISK'] = 'NORMAL'
-        self.data.loc[(self.data['HEALTH_SCORE']>23) & (self.data['HEALTH_SCORE']<=40), 'RISK'] = 'WARNING'
-        self.data.loc[(self.data['HEALTH_SCORE']>40) & (self.data['HEALTH_SCORE']<=80), 'RISK'] = 'RISK'
-        self.data.loc[self.data['HEALTH_SCORE']>80, 'RISK'] = 'DEFECT'
+        self.group['DEFECT_RISK_CATEGORY'] = 0
+        self.group.loc[self.group['HEALTH_SCORE']<=23, 'RISK'] = 'NORMAL'
+        self.group.loc[(self.group['HEALTH_SCORE']>23) & (self.group['HEALTH_SCORE']<=40), 'RISK'] = 'WARNING'
+        self.group.loc[(self.group['HEALTH_SCORE']>40) & (self.group['HEALTH_SCORE']<=80), 'RISK'] = 'RISK'
+        self.group.loc[self.group['HEALTH_SCORE']>80, 'RISK'] = 'DEFECT'
 
     def normalize_series(self, data_series: pd.Series) -> pd.DataFrame:
         """

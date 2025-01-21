@@ -4,12 +4,12 @@ import time
 import pandas as pd
 
 # module.healthchecker
-from csu_system_health import SimpleCsuSystemHealth 
-from sts_system_health import SimpleStsSystemHealth 
-from fts_system_health import SimpleFtsSystemHealth 
-from fmu_system_health import SimpleFmuSystemHealth 
-from tro_fault_detector import TROFaultAlgorithm
-from current_system_health import SimpleCurrentSystemHealth 
+from .csu_system_health import SimpleCsuSystemHealth 
+from .sts_system_health import SimpleStsSystemHealth 
+from .fts_system_health import SimpleFtsSystemHealth 
+from .fmu_system_health import SimpleFmuSystemHealth 
+from .tro_fault_detector import TROFaultAlgorithm
+from .current_system_health import SimpleCurrentSystemHealth 
 
 # module.dataline
 from stat_dataline.load_database import load_database
@@ -34,7 +34,7 @@ def time_decorator(func):
 
 # 데이터 로드
 @time_decorator
-def apply_system_health_algorithms_with_total(data, ship_id, op_index, section):
+def apply_system_health_algorithms_with_total(data: pd.DataFrame, ship_id: str) -> None:
     """
     시스템 건강 알고리즘을 순차적으로 적용하는 함수.
 
@@ -58,12 +58,16 @@ def apply_system_health_algorithms_with_total(data, ship_id, op_index, section):
     results = {}
     group_results = {}
 
-    # 각 알고리즘 실행 및 결과 저정
+    # 각 알고리즘 실행 및 결과 저장
     for key, cls, method in algorithms:
-        instance = cls(data)
+        if key == 'fmu':
+            instance = cls(data, ship_id=ship_id)
+        else:
+            instance = cls(data)
+
         method_func = getattr(instance, method)
         result, group = method_func(status=False)
-        result[key] = result
+        results[key] = result
         group_results[key] = group
     
     # 총 건강도 기준 계산
@@ -71,7 +75,8 @@ def apply_system_health_algorithms_with_total(data, ship_id, op_index, section):
         *group_results.values()
     )
     # 결과 적재
-    load_database('signlab', 'tc_ai_total_system_health_group', health_score_df)
+    # load_database('signlab', 'tc_ai_total_system_health_group', health_score_df)
+    load_database('ecs_test', 'test_tc_ai_total_system_health_group', health_score_df)
 
 def generate_tro_health_score(tro_df: pd.DataFrame) -> float: 
     """
@@ -128,7 +133,13 @@ def preprocess_system_health_algorithms_with_total(csu: pd.DataFrame, sts: pd.Da
     Returns:
         pd.DataFrame: 통합된 시스템 건강 데이터프레임.
     """
-    
+    # print(f"[INFO] CSU: \n {csu.head(5)}")
+    # print(f"[INFO] STS: \n {sts.head(5)}")
+    # print(f"[INFO] FTS: \n {fts.head(5)}")
+    # print(f"[INFO] CURRENT: \n {current.head(5)}")
+    # print(f"[INFO] FMU: \n {fmu.head(5)}")
+    # print(f"[INFO] TRO: \n {tro.head(5)}")
+
      # CSU 데이터 초기 설정
     health_score_df = csu[['SHIP_ID', 'OP_INDEX', 'SECTION', 'DATA_INDEX', 'HEALTH_SCORE']].rename(
         columns={'HEALTH_SCORE': 'CSU_HEALTH_SCORE'}

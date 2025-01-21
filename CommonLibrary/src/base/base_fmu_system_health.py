@@ -8,7 +8,7 @@ from typing import Tuple, Union
 from abc import ABC, abstractmethod
 
 # module
-from base_rate_change_manager import DataUtility
+from .base_rate_change_manager import DataUtility
 
 
 class BaseFmuSystemHealth(ABC):
@@ -51,13 +51,11 @@ class BaseFmuSystemHealth(ABC):
                 status가 False인 경우, 처리된 데이터프레임(`self.data`)과 그룹 데이터프레임(`self.group`)의 튜플.
         """
         self.refine_frames()
-        self.generate_health_score('FMU', self.ship_id)
+        self.generate_health_score('FMU')
         self._col_return()
-        self.apply_system_health_statistics_with_fts()
+        self.apply_system_health_statistics_with_fmu()
         
-        if status:
-            pass 
-        else: 
+        if not status:
             return self.data, self.group
         
     def generate_health_score(self, col: str) -> None:
@@ -71,19 +69,13 @@ class BaseFmuSystemHealth(ABC):
         Returns: 
             pd.DataFrame: 건강 점수가 포함된 데이터프레임
         """
-        self.data['STANDARDIZE_FMU'] = self.normalize_series(self[[col]], self.ship_id)
+        self.data['STANDARDIZE_FMU'] = self.normalize_series(self.data[[col]])
         self.data['THRESHOLD'] = 1.96
         self.data['STANDARDIZE_FMU'] = self.data['STANDARDIZE_FMU'].abs()
         self.data['HEALTH_RATIO'] = abs( self.data['STANDARDIZE_FMU'] /  self.data['THRESHOLD']) * 30
         self.data = DataUtility.generate_rolling_mean(self.data, col, window=5)
         self._about_col_score_return()
         self.data['HEALTH_RATIO'] = self.data['HEALTH_RATIO'].apply(lambda x: min(100, x))
-
-    @abstractmethod
-    def apply_calculating_rate_change(self, col: str):
-        """ calculating_rate_change 적용 메소드 (자식 클래스에서 구현 필요)
-        """
-        pass 
     
     @abstractmethod
     def refine_frames(self):

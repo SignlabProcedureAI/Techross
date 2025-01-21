@@ -7,36 +7,13 @@ import pickle
 
 # type hiting
 from sklearn.base import BaseEstimator
+from typing import Union, Tuple
 
 # module
-from CommonLibrary import BaseCurrentSystemHealth
+from base import BaseCurrentSystemHealth
 from models_dataline import load_database
 
 class ModelCurrentystemHealth(BaseCurrentSystemHealth):
-    def __init__(self, data: pd.DataFrame):
-        """
-        CURRENT 시스템 건강도를 모델링하는 클래스의 초기화 메서드.
-
-        Args:
-            data (pd.DataFrame): 초기화에 사용할 입력 데이터프레임.
-
-        Attributes:
-            start_date (datetime): 데이터의 첫 행에서 추출한 시작 시간.
-            end_date (datetime): 데이터의 첫 행에서 추출한 종료 시간.
-            running_time (float): 데이터의 첫 행에서 추출한 실행 시간.
-            op_type (str): 데이터의 첫 행에서 추출한 운영 유형.
-        """
-        self.data = data
-        
-        for col in ['DATA_TIME', 'START_TIME', 'END_TIME']:
-            self.data[col] = pd.to_datetime(self.data[col])
-
-        first_row = self.data.iloc[0]
-        self.start_date = first_row['START_TIME']
-        self.end_date = first_row['END_TIME']
-        self.running_time = first_row['RUNNING_TIME']
-        self.op_type = first_row['OP_TYPE']
-
     def refine_frames(self) -> None:
         """
         데이터 프레임에서 필요한 열만 선택하여 정제하는 함수
@@ -56,19 +33,19 @@ class ModelCurrentystemHealth(BaseCurrentSystemHealth):
         [
             'CSU','STS','FTS','FMU','TRO','RATE','VOLTAGE','CURRENT','ELECTRODE_EFFICIENCY'
         ]
-        self.group.assign(
+        self.group = self.group.assign(
                     START_TIME=self.start_date,
                     END_TIME=self.end_date,
                     RUNNING_TIME=self.running_time,
                     OP_TYPE=self.op_type
-                    ).reset_index(drop=True)
+                    ).reset_index()
         self.group = self.group[
             [
             'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','START_TIME','END_TIME',
             'RUNNING_TIME','CSU','STS','FTS','FMU','TRO','RATE','VOLTAGE','CURRENT','ELECTRODE_EFFICIENCY'
             ]
                 ]
-        load_database('ecs_test','tc_ai_electrode_group_v1.1.0', '200', self.group)
+        load_database('ecs_test','test_tc_ai_electrode_group_v1.1.0', '200', self.group)
 
         self.predict_stats_val()
         self.group = self.group[
@@ -80,7 +57,8 @@ class ModelCurrentystemHealth(BaseCurrentSystemHealth):
         self.group = self.group.rename({'ELECTRODE_EFFICIENCY':'ACTUAL'}, axis=1)
         self.group['ACTUAL'] = np.round(self.group['ACTUAL'],2)
         self.group['PRED'] = np.round(self.group['PRED'],2)
-        load_database('signlab','tc_ai_electrode_model_group', 'release', self.group)
+        # load_database('signlab','tc_ai_electrode_model_group', 'release', self.group)
+        load_database('ecs_test','test_tc_ai_electrode_model_group', '200', self.group)
 
     def predict_stats_val(self) -> None:
         """
@@ -97,7 +75,7 @@ class ModelCurrentystemHealth(BaseCurrentSystemHealth):
         X = self.group[['CSU','STS','FTS','FMU','TRO','RATE','VOLTAGE','CURRENT']]
         self.group['PRED'] =  model.predict(X)                      
 
-    def apply_system_health_algorithms_with_current(self):
+    def apply_system_health_algorithms_with_current(self, status: bool) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
         """ CURRENT 알고리즘 적용
         Args : 
           선박 이름, 오퍼레이션 번호, 섹션 번호
@@ -121,7 +99,8 @@ class ModelCurrentystemHealth(BaseCurrentSystemHealth):
                                'START_TIME','END_TIME','RUNNING_TIME']]
         self.group = self.apply_system_health_statistics_with_current()
 
-        return self.data, self.group
+        if not status:
+            return self.data, self.group
 
     def catorize_health_score(self) -> None:
         """
@@ -131,11 +110,11 @@ class ModelCurrentystemHealth(BaseCurrentSystemHealth):
             - HEALTH_SCORE 값에 따라 각 데이터 포인트를 'NORMAL', 'WARNING', 'RISK', 'DEFECT' 카테고리로 분류합니다
             - 분류 결과는 'RISK' 열에 저장됩니다.
         """
-        self.data['DEFECT_RISK_CATEGORY'] = 0
-        self.data.loc[self.data['ELECTRODE_EFFICIENCY']>=-16, 'RISK'] = 'NORMAL'
-        self.data.loc[(self.data['ELECTRODE_EFFICIENCY']<-16) & (self.data['ELECTRODE_EFFICIENCY']>=-40), 'RISK'] = 'WARNING'
-        self.data.loc[(self.data['ELECTRODE_EFFICIENCY']<-40) & (self.data['ELECTRODE_EFFICIENCY']>=-90), 'RISK'] = 'RISK'
-        self.data.loc[self.data['ELECTRODE_EFFICIENCY']<-90, 'RISK'] = 'DEFECT'
+        self.group['DEFECT_RISK_CATEGORY'] = 0
+        self.group.loc[self.group['ELECTRODE_EFFICIENCY']>=-16, 'RISK'] = 'NORMAL'
+        self.group.loc[(self.group['ELECTRODE_EFFICIENCY']<-16) & (self.group['ELECTRODE_EFFICIENCY']>=-40), 'RISK'] = 'WARNING'
+        self.group.loc[(self.group['ELECTRODE_EFFICIENCY']<-40) & (self.group['ELECTRODE_EFFICIENCY']>=-90), 'RISK'] = 'RISK'
+        self.group.loc[self.group['ELECTRODE_EFFICIENCY']<-90, 'RISK'] = 'DEFECT'
 
     @staticmethod
     def load_model_from_pickle(file_path: str) -> BaseEstimator:

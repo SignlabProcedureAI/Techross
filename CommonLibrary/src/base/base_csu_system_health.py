@@ -8,7 +8,7 @@ from typing import Tuple, Union
 from abc import ABC, abstractmethod
 
 # module
-from base_rate_change_manager import DataUtility
+from .base_rate_change_manager import DataUtility
 
 
 class BaseCsuSystemHealth(ABC):
@@ -86,11 +86,8 @@ class BaseCsuSystemHealth(ABC):
         self._col_return()
         self.apply_system_health_statistics_with_csu()
 
-        if status:
-            pass
-        else: 
+        if not status:
             return self.data, self.group
-
     
     def generate_health_score(self, col: str) -> None:
         """
@@ -105,7 +102,7 @@ class BaseCsuSystemHealth(ABC):
         """
 
         # 변화율 계산 (자식 클래스에서 오버라이드)
-        self.apply_calculating_rate_change(col)
+        self.apply_calculating_rate_change()
 
         self.data.dropna(inplace=True)
         self.data['THRESHOLD'] = 0.18
@@ -113,17 +110,12 @@ class BaseCsuSystemHealth(ABC):
         self.data['HEALTH_RATIO'] = (self.data[f'{col}_Ratio'] / self.data['THRESHOLD']).abs() * 10
         self.data = DataUtility.generate_rolling_mean(self.data, col, window=5)
 
-        self.data.columns = [
-            'SHIP_ID', 'OP_INDEX', 'SECTION', 'OP_TYPE', 'DATA_TIME', 'DATA_INDEX',
-            'CSU', 'STS', 'FTS', 'FMU', 'CURRENT', 'TRO', 'RATE', 'VOLTAGE',
-            'START_TIME', 'END_TIME', 'RUNNING_TIME', 'CSU_Ratio', 'THRESHOLD',
-            'HEALTH_RATIO', 'HEALTH_TREND'
-                ]
+        self._about_score_col_return()
         self.data.rename(columns={'CSU_Ratio': 'DIFF'}, inplace=True)
         self.data['HEALTH_RATIO'] = self.data['HEALTH_RATIO'].apply(lambda x: min(100, x))
 
     @abstractmethod
-    def apply_calculating_rate_change(self, col: str):
+    def apply_calculating_rate_change(self):
         """ calculating_rate_change 적용 메소드 (자식 클래스에서 구현 필요)
         """
         pass 
@@ -147,9 +139,16 @@ class BaseCsuSystemHealth(ABC):
         """
         pass 
 
+    @abstractmethod
     def _col_return(self):
         """
         반환값 형식을 정의합니다 (자식 클래스에서 구현 필요)
         """
         pass
-    
+
+    @abstractmethod
+    def _about_score_col_return(self):
+        """
+        반환값 형식을 정의합니다 (자식 클래스에서 구현 필요)
+        """
+        pass

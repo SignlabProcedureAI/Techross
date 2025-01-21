@@ -23,15 +23,15 @@ def load_database(database, table_name, data):
               오류가 발생하거나 DataFrame이 비어있을 경우 예외(테이블 생성) 또는 경고 메시지를 출력합니다.
     """
 
-    username = 'signlab'
-    password = 'signlab123'
-    host = '172.16.18.11'  # 또는 서버의 IP 주소
-    port = 3306 # MariaDB의 기본 포트
+    # username = 'signlab'
+    # password = 'signlab123'
+    # host = '172.16.18.11'  # 또는 서버의 IP 주소
+    # port = 3306 # MariaDB의 기본 포트
     
-    # username = 'bwms_dba'  # 사용자 이름
-    # password = '!^admin1234^!'  # 비밀번호
-    # host = 'signlab.iptime.org'  # 서버 주소
-    # port = 20002  # 포트
+    username = 'bwms_dba'  # 사용자 이름
+    password = '!^admin1234^!'  # 비밀번호
+    host = 'signlab.iptime.org'  # 서버 주소
+    port = 20002  # 포트
 
     engine = create_engine(f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}')
 

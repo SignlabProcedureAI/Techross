@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from CommonLibrary import DataUtility
+from base import DataUtility
 
 class RateChangeProcessor(DataUtility):
      @staticmethod

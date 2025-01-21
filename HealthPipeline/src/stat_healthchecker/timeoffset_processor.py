@@ -1,10 +1,10 @@
-from CommonLibrary import BaseTimeOffset
+from base import BaseTimeOffset
 import numpy as np
 from typing import  Tuple
 import pandas as pd
 
 class TimeOffsetSimple(BaseTimeOffset):
-    def _format_return(self, autocorr: np.ndarray) -> pd.DataFrame:
+    def _format_return(self, autocorr: np.ndarray, count: int) -> pd.DataFrame:
         """
         처리된 데이터프레임만 반환합니다.
 

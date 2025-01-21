@@ -2,11 +2,12 @@ import sys
 import os
 
 # 경로 설정: 스크립트 경로에서 상위 디렉토리로 이동한 후 src 경로 추가
+common_data_path = os.path.abspath(os.path.join(os.getcwd(), '../../CommonLibrary/src'))
 health_data_path = os.path.abspath(os.path.join('..', 'src'))
 health_learning_data_path = os.path.abspath(os.path.join(os.getcwd(), "../../HealthModelPipeline/dataflow/src"))
 preprocessing_path = os.path.abspath(os.path.join(os.getcwd(), "../../PipelinePrep/src"))
 
-paths = [health_data_path, health_learning_data_path, preprocessing_path]
+paths = [common_data_path, health_data_path, health_learning_data_path, preprocessing_path]
 
 def add_paths(paths):
     """
@@ -24,31 +25,21 @@ def add_paths(paths):
 
 add_paths(paths)
 
-
-# basic
-import pandas as pd
-
-# time
-import schedule
-import time
-
 # module.healthchecker
-from stat_healthchecker.total_system_health_algorithm import apply_system_health_algorithms_with_total
-from models_healthchecker.total_system_health_learning_algorithm import apply_system_health_learning_algorithms_with_total
+from stat_healthchecker import apply_system_health_algorithms_with_total
+from models_healthchecker import apply_system_health_learning_algorithms_with_total
 from prep.load_processing import distribute_by_application
 
-# module.dataline
-from stat_dataline.scheduled_data_fetcher import fetch_data_on_schedule
-from stat_dataline.logger_confg import logger
-from stat_dataline.select_dataset import get_dataframe_from_database
-
+# module.dataline 
+from stat_dataline import logger
+from stat_dataline import get_dataframe_from_database
 
 def get_latest_date_on_schedule():
 
     # last_fetched ~ current date → data extract
     # fetched_data = fetch_data_on_schedule('ecs_dat1', 'ecs_data')
 
-    fetched_data = get_dataframe_from_database('ecs_dat1', 'ecs_data_new', all=True)
+    fetched_data = get_dataframe_from_database('ecs_data_new', all=True)
 
     # 해당 추출 데이터 그룹화
     grouped_data = fetched_data.groupby(['SHIP_ID','OP_INDEX','SECTION']).count()
@@ -85,43 +76,57 @@ def schedule_health_assessment():
 
             print(f'SHIP_ID : {ship_id} / OP_INDEX : {op_index} / SECTION : {section} -  조건 통과')
 
-            try:
-                sensor, preprocessed = distribute_by_application(ship_id=ship_id, op_index=op_index, section=section)
-                if sensor is None and preprocessed is None:
-                    print("선박 데이터 프레임이 존재하지 않습니다.")
-                    continue
+            sensor, preprocessed = distribute_by_application(ship_id=ship_id, op_index=op_index, section=section)
+            if sensor is None and preprocessed is None:
+                print("선박 데이터 프레임이 존재하지 않습니다.")
+                continue
 
-                elif preprocessed is not None:
-                    logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=The results were derived from the model and statistics package | TYPE=all | IS_PROCESSED=True')
-                    print("전처리 후 학습 데이터 프레임이 존재합니다.")
-                    apply_system_health_algorithms_with_total(sensor, ship_id, op_index, section)
-                    apply_system_health_learning_algorithms_with_total(data=preprocessed, ship_id=ship_id, op_index=op_index, section=section)
-                else:
-                    logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time}  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True')
-                    print("전처리 후 모델 데이터 프레임이 존재하지 않아 통계 알고리즘 단독 진행합니다.")
-                    apply_system_health_algorithms_with_total(data=sensor, ship_id=ship_id, op_index=op_index, section=section)
+            elif preprocessed is not None:
+                logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=The results were derived from the model and statistics package | TYPE=all | IS_PROCESSED=True')
+                print("전처리 후 학습 데이터 프레임이 존재합니다.")
+                apply_system_health_algorithms_with_total(sensor, ship_id)
+                apply_system_health_learning_algorithms_with_total(data=preprocessed, ship_id=ship_id)
+            else:
+                logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time}  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True')
+                print("전처리 후 모델 데이터 프레임이 존재하지 않아 통계 알고리즘 단독 진행합니다.")
+                apply_system_health_algorithms_with_total(data=sensor, ship_id=ship_id)
 
-            except ValueError as e :
-                logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY={e} | TYPE=exceptional_handling | IS_PROCESSED=False')
-                print(f'에러 발생: {e}. 다음 반복으로 넘어갑니다.')
-                continue  # 에러 발생 시 다음 반복으로 넘어감\
+        #     try:
+        #         sensor, preprocessed = distribute_by_application(ship_id=ship_id, op_index=op_index, section=section)
+        #         if sensor is None and preprocessed is None:
+        #             print("선박 데이터 프레임이 존재하지 않습니다.")
+        #             continue
 
-            except KeyError as e :
-                logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY={e} | TYPE=exceptional_handling | IS_PROCESSED=False')
-                print(f'에러 발생: {e}. 다음 반복으로 넘어갑니다.')
+        #         elif preprocessed is not None:
+        #             logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=The results were derived from the model and statistics package | TYPE=all | IS_PROCESSED=True')
+        #             print("전처리 후 학습 데이터 프레임이 존재합니다.")
+        #             apply_system_health_algorithms_with_total(sensor, ship_id, op_index, section)
+        #             apply_system_health_learning_algorithms_with_total(data=preprocessed, ship_id=ship_id, op_index=op_index, section=section)
+        #         else:
+        #             logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time}  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True')
+        #             print("전처리 후 모델 데이터 프레임이 존재하지 않아 통계 알고리즘 단독 진행합니다.")
+        #             apply_system_health_algorithms_with_total(data=sensor, ship_id=ship_id, op_index=op_index, section=section)
 
-            except TypeError as e :
-                logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY={e} | TYPE=exceptional_handling | IS_PROCESSED=False')
-                print(f'에러 발생: {e}. 다음 반복으로 넘어갑니다.')
-                continue  # 에러 발생 시 다음 반복으로 넘어감
+        #     except ValueError as e :
+        #         logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY={e} | TYPE=exceptional_handling | IS_PROCESSED=False')
+        #         print(f'에러 발생: {e}. 다음 반복으로 넘어갑니다.')
+        #         continue  # 에러 발생 시 다음 반복으로 넘어감\
 
-            except IndexError as e :
-                print(f'에러 발생: {e}. 다음 반복으로 넘어갑니다.')
-                logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY={e} | TYPE=exceptional_handling | IS_PROCESSED=False')
-                continue  # 에러 발생 시 다음 반복으로 넘어감
-        else:
-            logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=The data length is {data_len} and does not satisfy the condition | TYPE=data_length_limit | IS_PROCESSED=False')
+        #     except KeyError as e :
+        #         logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY={e} | TYPE=exceptional_handling | IS_PROCESSED=False')
+        #         print(f'에러 발생: {e}. 다음 반복으로 넘어갑니다.')
+
+        #     except TypeError as e :
+        #         logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY={e} | TYPE=exceptional_handling | IS_PROCESSED=False')
+        #         print(f'에러 발생: {e}. 다음 반복으로 넘어갑니다.')
+        #         continue  # 에러 발생 시 다음 반복으로 넘어감
+
+        #     except IndexError as e :
+        #         print(f'에러 발생: {e}. 다음 반복으로 넘어갑니다.')
+        #         logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY={e} | TYPE=exceptional_handling | IS_PROCESSED=False')
+        #         continue  # 에러 발생 시 다음 반복으로 넘어감
+        # else:
+        #     logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=The data length is {data_len} and does not satisfy the condition | TYPE=data_length_limit | IS_PROCESSED=False')
 
 
 schedule_health_assessment()
-

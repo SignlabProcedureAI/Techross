@@ -8,13 +8,28 @@ from abc import ABC, abstractmethod
 class BaseCurrentSystemHealth(ABC):
     def __init__(self, data: pd.DataFrame) -> None:
         """
-        데이터 초기화
-        
-        Args: 
-          data: 입력 데이터프레임
+        CURRENT 시스템 건강도를 모델링하는 클래스의 초기화 메서드.
+
+        Args:
+            data (pd.DataFrame): 초기화에 사용할 입력 데이터프레임.
+
+        Attributes:
+            start_date (datetime): 데이터의 첫 행에서 추출한 시작 시간.
+            end_date (datetime): 데이터의 첫 행에서 추출한 종료 시간.
+            running_time (float): 데이터의 첫 행에서 추출한 실행 시간.
+            op_type (str): 데이터의 첫 행에서 추출한 운영 유형.
         """
         self.data = data
+        
+        for col in ['DATA_TIME', 'START_TIME', 'END_TIME']:
+            self.data[col] = pd.to_datetime(self.data[col])
 
+        first_row = self.data.iloc[0]
+        self.start_date = first_row['START_TIME']
+        self.end_date = first_row['END_TIME']
+        self.running_time = first_row['RUNNING_TIME']
+        self.op_type = first_row['OP_TYPE']
+        
     def calculate_minus_value(self):
         """
         ELECTRODE_EFFICIENCY 값을 계산하는 함수.

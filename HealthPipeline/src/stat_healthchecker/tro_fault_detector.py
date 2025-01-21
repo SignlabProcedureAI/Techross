@@ -1,16 +1,17 @@
-
 # basic
 import pandas as pd
+import pickle
 
 # type hiting
-from typing import Tuple
+from typing import Tuple, Union
+from sklearn.base import BaseEstimator
 
 # module
-from CommonLibrary import BaseFaultAlgorithm
-from  stat_dataline import load_database
-from rate_change_manager import RateChangeProcessor
-from hunting_processor import StatHungting
-from timeoffset_processor import BaseTimeOffset
+from base import BaseFaultAlgorithm
+from stat_dataline import load_database
+from .rate_change_manager import RateChangeProcessor
+from .hunting_processor import StatHungting
+from .timeoffset_processor import TimeOffsetSimple
 
 class TROFaultAlgorithm(BaseFaultAlgorithm):
     def apply_tro_labeling(self) -> None:
@@ -24,8 +25,8 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
             4. TRO 조건 업데이트 및 추가 조건 설정.
             5. 헌팅 라벨 및 시간 오프셋 라벨링 적용.
         """
-        self.data = RateChangeProcessor.calculating_rate_change(self.data, 'TRO')
-        self.data = RateChangeProcessor.calculating_rate_change(self.data, 'pred')
+        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'TRO')
+        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'pred')
 
         position_columns = ['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT',
                             'TRO','TRO_Ratio','pred','pred_Ratio','START_TIME','END_TIME','RUNNING_TIME']
@@ -39,8 +40,9 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         
         self.update_tro_condition()
         self.give_tro_out_of_water_condition()
-        self.data = StatHungting.label_hunting_multiple_of_two(self.data)
-        time_offset_processor = BaseTimeOffset(self.data)
+        hunting_instance = StatHungting()
+        self.data = hunting_instance.label_hunting_multiple_of_two(self.data)
+        time_offset_processor = TimeOffsetSimple(self.data)
         self.data = time_offset_processor.classify_time_offset_label() 
 
     def apply_fault_label_statistics(self) -> None:
@@ -67,9 +69,10 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
                                 [
                                 'SHIP_ID','OP_INDEX','SECTION','RUNNING_TIME','OP_TYPE','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET','START_TIME','END_TIME']
                                 ]
-        load_database('signlab','tc_ai_fault_group', self.group)
+        # load_database('signlab','tc_ai_fault_group', self.group)
+        load_database.load_database('ecs_test','test_tc_ai_fault_group', self.group)
 
-    def apply_tro_fault_detector(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def apply_tro_fault_detector(self, status: bool) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
         """
         TRO 알고리즘을 적용하여 실시간 데이터와 그룹 데이터를 반환하는 함수.
 
@@ -95,8 +98,25 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         
         self.apply_fault_label_statistics()
         self.data = self.data[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET']]
-        return self.data, self.group
+
+        if not status:
+            return self.data, self.group
 
   
- 
+    @staticmethod
+    def load_model_from_pickle(file_path: str) -> BaseEstimator:
+        """
+        피클 파일에서 모델을 불러오는 함수.
+
+        Args:
+        - file_path: 불러올 피클 파일의 경로
+
+        Returns:
+        - model: 불러온 모델 객체
+        """
+        with open(file_path, 'rb') as file:
+            model = pickle.load(file)
+        print(f"모델이 {file_path}에서 성공적으로 불러와졌습니다.")
+        return model
+
 

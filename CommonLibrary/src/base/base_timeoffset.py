@@ -9,7 +9,7 @@ from scipy.fft import fft, fftfreq
 class BaseTimeOffset(ABC):
      """ timeoffset 공통 기능을 담당하는 베이스 클래스
      """
-     def __init__(self, data: pd.Datafrmae) -> None:
+     def __init__(self, data: pd.DataFrame) -> None:
           """
           데이터 초기화 및 공통 속성 설정
 
@@ -17,7 +17,7 @@ class BaseTimeOffset(ABC):
           """
           self.data = data
    
-     def classify_time_offset_label(self) -> Union[Tuple[pd.Dataframe, np.ndarray], pd.DataFrame]:
+     def classify_time_offset_label(self) -> Union[Tuple[pd.DataFrame, int], pd.DataFrame]:
           """
           데이터에서 시간 오프셋 레이블을 분류
 
@@ -56,13 +56,13 @@ class BaseTimeOffset(ABC):
           # 초기 시간 필터 제한
           self.limit_date_time()
 
-          return self._format_return(autocorr,count)
+          return self._format_return(autocorr, count)
    
      def apply_threshold(self) -> None:
           """
           크로스 코릴레이션 값에 임계값을 적용합니다.
           """
-          cross_correlation = self.data['cross_correlation']
+          cross_correlation = self.data['CROSS_CORRELATION']
           peaks, _ = find_peaks(cross_correlation, height=30, prominence=30)
 
           self.data['TIME_OFFSET'] = 0

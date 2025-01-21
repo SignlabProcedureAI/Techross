@@ -2,8 +2,8 @@
 import pandas as pd
 
 # module
-from CommonLibrary import BaseFtsSystemHealth
-from rate_change_manager import RateChangeProcessor
+from base import BaseFtsSystemHealth
+from .rate_change_manager import RateChangeProcessor
 
 class SimpleFtsSystemHealth(BaseFtsSystemHealth):
     def refine_frames(self):
@@ -20,9 +20,9 @@ class SimpleFtsSystemHealth(BaseFtsSystemHealth):
         FTS와 관련된 그룹 통계와 건강 점수를 계산하여 데이터 프레임에 적용하는 함수
         """
         self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).mean()
-        score, trend_score = self.calculate_group_health_score('FTS')
+        score = self.calculate_group_health_score('FTS')
         self.group['HEALTH_SCORE'] = score
-        self.group.reset_index(drop=True)
+        self.group = self.group.reset_index()
         self.group = self.group[
         [
          'SHIP_ID','OP_INDEX','SECTION','DATA_INDEX','FTS','HEALTH_SCORE'
@@ -51,3 +51,10 @@ class SimpleFtsSystemHealth(BaseFtsSystemHealth):
         포멧 기준 조정된 점수를 반환하는 함수
         """
         return adjusted_score
+    
+    def _about_score_col_return(self):
+        self.data.columns = [
+            'SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX',
+            'CSU','STS','FTS','FMU','CURRENT','TRO',
+            'FTS_Ratio','THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
+                    ]

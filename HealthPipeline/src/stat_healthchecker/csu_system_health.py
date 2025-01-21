@@ -2,8 +2,8 @@
 import pandas as pd
 
 # module
-from CommonLibrary import BaseCsuSystemHealth
-from rate_change_manager import RateChangeProcessor
+from base import BaseCsuSystemHealth
+from .rate_change_manager import RateChangeProcessor
 
 class SimpleCsuSystemHealth(BaseCsuSystemHealth):
     def refine_frames(self):
@@ -20,9 +20,9 @@ class SimpleCsuSystemHealth(BaseCsuSystemHealth):
         CSU와 관련된 그룹 통계와 건강 점수를 계산하여 데이터 프레임에 적용하는 함수
         """
         self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).mean()
-        score, trend_score = self.calculate_group_health_score('CSU')
+        score = self.calculate_group_health_score('CSU')
         self.group['HEALTH_SCORE'] = score
-        self.group.reset_index(drop=True)
+        self.group = self.group.reset_index()
         self.group = self.group[
         [
           'SHIP_ID','OP_INDEX','SECTION','DATA_INDEX','HEALTH_SCORE'
@@ -34,7 +34,6 @@ class SimpleCsuSystemHealth(BaseCsuSystemHealth):
         CSU 열에 대한 변화율을 계산하여 데이터에 적용하는 함수. 
         """
         self.data = RateChangeProcessor.calculate_rate_change(self.data, 'CSU')
-
 
     def _col_return(self) -> pd.DataFrame:
         """
@@ -51,3 +50,10 @@ class SimpleCsuSystemHealth(BaseCsuSystemHealth):
         포멧 기준 조정된 점수를 반환하는 함수.
         """
         return adjusted_score
+    
+    def _about_score_col_return(self):
+        self.data.columns = [
+                'SHIP_ID', 'OP_INDEX', 'SECTION', 'DATA_TIME', 'DATA_INDEX',
+                'CSU', 'STS', 'FTS', 'FMU', 'CURRENT', 'TRO', 'CSU_Ratio', 'THRESHOLD',
+                'HEALTH_RATIO', 'HEALTH_TREND'
+                    ]

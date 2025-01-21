@@ -1,18 +1,14 @@
 # basic
 import pandas as pd
-import numpy as np
 import time
 
 # module.healthchecker
-from csu_system_health import ModelCsuSystemHealth
-from sts_system_health import ModelStsSystemHealth
-from fts_system_health import ModelFtsSystemHealth
-from fmu_system_health import ModelFmuSystemHealth
-from tro_fault_detector import TROFaultAlgorithm
-from current_system_health import ModelCurrentystemHealth
-
-# module.dataline
-from models_dataline.load_database import load_database
+from .csu_system_health import ModelCsuSystemHealth
+from .sts_system_health import ModelStsSystemHealth
+from .fts_system_health import ModelFtsSystemHealth
+from .fmu_system_health import ModelFmuSystemHealth
+from .tro_fault_detector import TROFaultAlgorithm
+from .current_system_health import ModelCurrentystemHealth
 
 def time_decorator(func): 
     """
@@ -33,7 +29,7 @@ def time_decorator(func):
     return wrapper
 
 @time_decorator
-def apply_system_health_learning_algorithms_with_total(data: pd.DataFrame, ship_id: str, op_index: int, section: int) -> None:
+def apply_system_health_learning_algorithms_with_total(data: pd.DataFrame, ship_id: str) -> None:
     """
     시스템 건강 알고리즘을 순차적으로 적용하는 함수.
 
@@ -54,5 +50,8 @@ def apply_system_health_learning_algorithms_with_total(data: pd.DataFrame, ship_
     ]
 
     for model_class, method_name in algorithms:
-        instance = model_class(data)
+        if method_name == 'apply_system_health_algorithms_with_fmu':
+            instance = model_class(data, ship_id=ship_id)
+        else:
+            instance = model_class(data)
         getattr(instance, method_name)(status=True)

@@ -1,6 +1,10 @@
 # basic
 import pandas as pd
 import os
+import pickle
+
+# type hiting
+from sklearn.base import BaseEstimator
 
 # class
 from abc import ABC, abstractmethod
@@ -52,8 +56,18 @@ class BaseFaultAlgorithm(ABC):
         예측 모델을 사용하여 데이터를 처리합니다.
         """
         columns = ['CSU', 'STS', 'FTS', 'FMU', 'CURRENT']
-        tro_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../models_model/tro_model')
-        tro_model = self.load_model_from_pickle(tro_model_path)
+        tro_model_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), 
+            '..',
+            '..',
+            '..',
+            'HealthModelPipeline',
+            'dataflow',
+            'src',
+            'models_model',
+            'tro_model'
+            )
+        tro_model = BaseFaultAlgorithm.load_model_from_pickle(tro_model_path)
 
         independent_vars = self.data[columns]
         self.data['pred'] = tro_model.predict(independent_vars)
@@ -65,8 +79,8 @@ class BaseFaultAlgorithm(ABC):
         last_10_values = self.data['DATA_INDEX'].iloc[-10:].values
 
         self.data.loc[self.data['TRO'] >= 8, 'STEEP_LABEL'] = 0
-        self.data.loc[(self.data['DATE_INDEX']>10) & (self.data['DATA_INDEX'].isin(last_10_values)), 'STEEP_LABEL'] = 0
-        self.data.loc[(self.data['DATE_INDEX']>10) & (self.data['DATA_INDEX'].isin(last_10_values)), 'OUT_OF_WATER_STEEP'] = 0  
+        self.data.loc[(self.data['DATA_INDEX']>10) & (self.data['DATA_INDEX'].isin(last_10_values)), 'STEEP_LABEL'] = 0
+        self.data.loc[(self.data['DATA_INDEX']>10) & (self.data['DATA_INDEX'].isin(last_10_values)), 'OUT_OF_WATER_STEEP'] = 0  
       
     
     def give_tro_out_of_water_condition(self) -> None:
@@ -118,3 +132,18 @@ class BaseFaultAlgorithm(ABC):
         """
         pass
 
+    @staticmethod
+    def load_model_from_pickle(file_path: str) -> BaseEstimator:
+        """
+        피클 파일에서 모델을 불러오는 함수.
+
+        Args:
+        - file_path: 불러올 피클 파일의 경로
+
+        Returns:
+        - model: 불러온 모델 객체
+        """
+        with open(file_path, 'rb') as file:
+            model = pickle.load(file)
+        print(f"모델이 {file_path}에서 성공적으로 불러와졌습니다.")
+        return model

@@ -28,7 +28,6 @@ import os
 # basic
 import json
 import pandas as pd
-from datetime import datetime
 import time
 
 
@@ -37,9 +36,9 @@ from prep.preprocessing import apply_preprocessing_fuction
 from prep_visualizer import visualize as visual
 
 # module.dataline
-from prep_dataline.select_dataset  import get_dataframe_from_database
-from prep_dataline.load_database import load_database
-from stat_dataline.logger_confg import logger
+from prep_dataline  import get_dataframe_from_database
+from prep_dataline import load_database
+from stat_dataline import logger
 
 
 
@@ -99,8 +98,8 @@ def process_preprocessed_data(indicator_data, preprocessed_data):
     concat = concat[['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','NOISE','MISSING','DUPLICATE','OPERATION','DATA_COUNT','PRE_COUNT','START_DATE','END_DATE','REG_DATE']]
 
     # 데이터 적재
-    load_database('signlab', 'tc_data_preprocessing', concat)
-    # load_database('ecs_test', 'tc_data_preprocessing_flag', concat)
+    # load_database('signlab', 'tc_data_preprocessing', concat)
+    load_database('ecs_test', 'test_tc_data_preprocessing_flag', concat)
 
 def time_decorator(func): 
     def wrapper(**kwargs):
@@ -115,8 +114,8 @@ def time_decorator(func):
 def distribute_by_application(ship_id, op_index, section):
 
     # 데이터 로드
-    df = get_dataframe_from_database('tc_ecs_data_flag', ship_id = ship_id, op_index = op_index, section = section)
-    optime = get_dataframe_from_database('tc_ecs_optime_flag', optime=True, ship_id = ship_id, op_index = op_index)
+    df = get_dataframe_from_database('ecs_data_new', ship_id = ship_id, op_index = op_index, section = section)
+    optime = get_dataframe_from_database('ecs_optime_new', optime=True, ship_id = ship_id, op_index = op_index)
 
     df = df[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','TRO','ANU','RATE','CURRENT','VOLTAGE']]
     optime = optime[['SHIP_ID','OP_INDEX','OP_TYPE','START_TIME','END_TIME','RUNNING_TIME']] 
@@ -181,8 +180,8 @@ def distribute_by_application(ship_id, op_index, section):
                 # 실시간 데이터 적재
                 data_col = ['SHIP_ID','OP_INDEX','SECTION','DATA_INDEX']
                 result_data = data[data_col]
-                load_database('signlab', 'tc_data_preprocessing_result', result_data) 
-                # load_database('ecs_test', 'tc_data_preprocessing_result_flag', result_data)
+                # load_database('signlab', 'tc_data_preprocessing_result', result_data) 
+                load_database('ecs_test', 'test_tc_data_preprocessing_result_flag', result_data)
 
                 return original_data, data
             

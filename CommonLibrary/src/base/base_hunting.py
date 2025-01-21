@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 class BaseHunting(ABC):
-    def label_hunting_multiple_of_two(self, data: pd.DataFrame) -> pd.DataFrame:
+    def label_hunting_multiple_of_two(self, data) -> pd.DataFrame:
         """
         공통 로직: 변화율 계산, 임계값 라벨링, 헌팅 라벨링
         """

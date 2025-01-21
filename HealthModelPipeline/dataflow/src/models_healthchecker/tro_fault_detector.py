@@ -1,13 +1,18 @@
 # basic
-import pandas as pd
 import os
+import pandas as pd
+import pickle
+
+# type hinting 
+from typing import Union, Tuple
+from sklearn.base import BaseEstimator
 
 # module
-from CommonLibrary import BaseFaultAlgorithm
-from  models_dataline import load_database
-from rate_change_manager import RateChangeProcessor
-from hunting_processor import ModelHunting
-from timeoffset_processor import TimeOffsetWithAutocorr
+from base import BaseFaultAlgorithm
+from models_dataline import load_database
+from .rate_change_manager import RateChangeProcessor
+from .hunting_processor import ModelHunting
+from .timeoffset_processor import TimeOffsetWithAutocorr
 
 class TROFaultAlgorithm(BaseFaultAlgorithm):
     def catorize_health_score(self) -> None:
@@ -71,8 +76,8 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
             4. TRO 조건 업데이트 및 추가 조건 설정.
             5. 헌팅 라벨 및 시간 오프셋 라벨링 적용.
         """
-        self.data = RateChangeProcessor.calculating_rate_change(self.data, 'TRO')
-        self.data = RateChangeProcessor.calculating_rate_change(self.data, 'pred')
+        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'TRO')
+        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'pred')
 
         position_columns = ['SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT',
                             'TRO','TRO_Ratio','pred','pred_Ratio','START_TIME','END_TIME','RUNNING_TIME']
@@ -86,7 +91,8 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         
         self.update_tro_condition()
         self.give_tro_out_of_water_condition()
-        self.data = ModelHunting.label_hunting_multiple_of_two(self.data)
+        model_hunting_instance = ModelHunting()
+        self.data = model_hunting_instance.label_hunting_multiple_of_two(self.data)
         time_offset_processor = TimeOffsetWithAutocorr(self.data)
         self.data, self.count = time_offset_processor.classify_time_offset_label() 
 
@@ -133,13 +139,14 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
                                  'PRED_DIFF','RE_CROSS_CORRELATION_COUNT','TRO_NEG_COUNT','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING',
                                  'TIME_OFFSET','START_TIME','END_TIME','RUNNING_TIME']
                                 ]
-        load_database('ecs_test','tc_ai_fault_group_v1.1.0', '200', self.group)
+        load_database('ecs_test','test_tc_ai_fault_group_v1.1.0', '200', self.group)
 
         self.predict_stats_val()
         self.group = self.catorize_health_score(self.group)
-        load_database('signlab','tc_ai_fault_model_group', 'release', self.group)
+        # load_database('signlab','tc_ai_fault_model_group', 'release', self.group)
+        load_database('ecs_test','test_tc_ai_fault_model_group', '200', self.group)
 
-    def apply_tro_fault_detector(self,status) -> None:
+    def apply_tro_fault_detector(self, status) -> Union[None, Tuple[pd.DataFrame, pd.DataFrame]]:
         """
         TRO 알고리즘을 적용하여 데이터 정제, 예측, 라벨링 및 통계 계산을 수행하는 함수.
 
@@ -161,6 +168,9 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
             'TIME_OFFSET','START_TIME','END_TIME','RUNNING_TIME']
             ]
         self.apply_fault_label_statistics()
+
+        if not status:
+            return self.data, self.group
   
- 
+
 

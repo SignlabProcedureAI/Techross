@@ -12,10 +12,10 @@ from sklearn.base import BaseEstimator
 from sklearn.preprocessing import StandardScaler
 
 # module
-from CommonLibrary import BaseCsuSystemHealth
-from rate_change_manager import RateChangeProcessor
+from base import BaseFmuSystemHealth
+from .rate_change_manager import RateChangeProcessor
 
-class SimpleFmuSystemHealth(BaseCsuSystemHealth):
+class SimpleFmuSystemHealth(BaseFmuSystemHealth):
     def refine_frames(self):
         """
         데이터 프레임에서 필요한 열만 선택하여 정제하는 함수
@@ -80,21 +80,14 @@ class SimpleFmuSystemHealth(BaseCsuSystemHealth):
         FMU와 관련된 그룹 통계와 건강 점수를 계산하여 데이터 프레임에 적용하는 함수
         """
         self.group = self.data.groupby(['SHIP_ID','OP_INDEX','SECTION']).mean()
-        score, trend_score = self.calculate_group_health_score('FMU')
+        score = self.calculate_group_health_score()
         self.group['HEALTH_SCORE'] = score
-        self.group.reset_index(drop=True)
+        self.group = self.group.reset_index()
         self.group = self.group[
         [
           'SHIP_ID','OP_INDEX','SECTION','DATA_INDEX','FMU','STANDARDIZE_FMU','HEALTH_SCORE'
         ]
                 ]
-
-    def apply_calculating_rate_change(self) -> None:
-        """
-        FMU 열에 대한 변화율을 계산하여 데이터에 적용하는 함수. 
-        """
-        self.data = RateChangeProcessor.calculate_rate_change(self.data, 'FMU')
-
 
     def _col_return(self) -> pd.DataFrame:
         """
@@ -116,8 +109,7 @@ class SimpleFmuSystemHealth(BaseCsuSystemHealth):
         """
         건강도 점수에 반영하는 변수 반환 
         """
-        position_columns = [
+        self.data.columns = [
                  'SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT','TRO',
                 'STANDARDIZE_FMU','THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
                     ]
-        self.data = self.data[position_columns]  

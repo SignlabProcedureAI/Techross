@@ -15,9 +15,9 @@ class DataUtility(ABC):
         pass
 
     @staticmethod
-    def generate_rolling_mean(data: pd.DataFrame, col: str, window_size: int) -> pd.DataFrame:
+    def generate_rolling_mean(data: pd.DataFrame, col: str, window: int) -> pd.DataFrame:
         data.sort_index(inplace=True)
-        data['rolling_mean'] = data[col].rolling(window=window_size).mean()
+        data['rolling_mean'] = data[col].rolling(window=window).mean()
         data.dropna(inplace=True)
         return data 
     
@@ -32,7 +32,7 @@ class DataUtility(ABC):
             return None
     
     @staticmethod
-    def generate_tro_neg_count(abnormal: pd.Dataframe) -> pd.DataFrame:
+    def generate_tro_neg_count(abnormal: pd.DataFrame) -> pd.DataFrame:
         abnormal['TRO_NEG_COUNT'] = 0
         negative_count = 0
 

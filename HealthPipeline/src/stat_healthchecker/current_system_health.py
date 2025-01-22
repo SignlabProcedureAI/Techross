@@ -32,6 +32,7 @@ class SimpleCurrentSystemHealth(BaseCurrentSystemHealth):
                     RUNNING_TIME=self.running_time,
                     OP_TYPE=self.op_type
                     )
+        self.group = self.group[['SHIP_ID','OP_INDEX','SECTION','RUNNING_TIME','OP_TYPE','ELECTRODE_EFFICIENCY','START_TIME','END_TIME']]
         # load_database('signlab', 'tc_ai_current_system_health_group', self.group)
         load_database.load_database('ecs_test', 'test_tc_ai_current_system_health_group', self.group)
 
@@ -82,7 +83,7 @@ class SimpleCurrentSystemHealth(BaseCurrentSystemHealth):
         self.data = self.data[['SHIP_ID','OP_INDEX','SECTION','DATA_TIME','DATA_INDEX','ELECTRODE_EFFICIENCY']]
 
         # 9. 자동 적재
-        # load_database('signlab','tc_ai_current_system_health', sensor_data)
+        load_database.load_database('ecs_test','tc_ai_current_system_health', self.data)
 
         if not status:
-            return self.data, self.group
+            return self.data, self.group 

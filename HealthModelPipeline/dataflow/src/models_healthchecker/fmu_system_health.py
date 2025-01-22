@@ -15,7 +15,7 @@ from models_dataline import load_database
 from .rate_change_manager import RateChangeProcessor
 
 class ModelFmuSystemHealth(BaseFmuSystemHealth):
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame, ship_id: str):
         """
         FMU 시스템 건강도를 모델링하는 클래스의 초기화 메서드.
 
@@ -29,6 +29,7 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
             op_type (str): 데이터의 첫 행에서 추출한 운영 유형.
         """
         self.data = data
+        self.ship_id = ship_id
 
         for col in ['DATA_TIME', 'START_TIME', 'END_TIME']:
             self.data[col] = pd.to_datetime(self.data[col])
@@ -73,10 +74,9 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
                             'STANDARDIZE_FMU_MIN','STANDARDIZE_FMU_MEAN','STANDARDIZE_FMU_MAX','THRESHOLD',
                             'HEALTH_RATIO','HEALTH_TREND'
                             ]
-        score, trend_score = self.calculate_group_health_score('FMU')
+        score = self.calculate_group_health_score()
         self.group = self.group.assign(
                     HEALTH_SCORE=score,
-                    TREND_SCORE=trend_score,
                     START_TIME=self.start_date,
                     END_TIME=self.end_date,
                     RUNNING_TIME=self.running_time,
@@ -97,7 +97,7 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
                 'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME'
             ]
             ]
-        self.group = self.catorize_health_score()
+        self.catorize_health_score()
         self.group = self.group.rename({'HEALTH_SCORE':'ACTUAL'}, axis=1)
         self.group['ACTUAL'] = np.round(self.group['ACTUAL'],2)
         self.group['PRED'] = np.round(self.group['PRED'],2)
@@ -144,11 +144,10 @@ class ModelFmuSystemHealth(BaseFmuSystemHealth):
     def _about_col_score_return(self):
         """ 건강도 점수에 반영하는 변수 반환 
         """
-        position_columns = [
+        self.data.columns = [
                   'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','DATA_TIME','DATA_INDEX','CSU','STS','FTS','FMU','CURRENT','TRO','RATE', 'VOLTAGE',
                 'START_TIME','END_TIME','RUNNING_TIME','STANDARDIZE_FMU','THRESHOLD','HEALTH_RATIO','HEALTH_TREND'
                     ]
-        self.data = self.data[position_columns]   
 
     def catorize_health_score(self) -> None:
         """

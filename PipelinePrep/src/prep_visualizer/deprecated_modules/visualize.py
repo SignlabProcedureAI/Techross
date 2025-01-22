@@ -8,11 +8,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sns
 
-
-
 # module
-from prep.preprocessing import apply_preprocessing_fuction
-
+from PipelinePrep.src.prep.deprecated_modules.preprocessing import apply_preprocessing_fuction
 
 # 인터랙티브 모드 비활성화
 plt.ioff()
@@ -44,7 +41,6 @@ def select_data_variable(original_data, data):
     data = data.rename({'ship_name':'SHIP_NAME'},axis=1)
     
     return original_data, data
-
 
 def plot_histograms_with_noise(df, ship_id, op_index, section, str_op_type):
     """
@@ -154,7 +150,6 @@ def plot_histograms_with_noise(df, ship_id, op_index, section, str_op_type):
                 plt.axvline(outlier_deballast_dict[column][0], color=line_color, linestyle='--', alpha=0.8)
                 plt.axvline(outlier_deballast_dict[column][1], color=line_color, linestyle='--', alpha=0.8)
 
-
     plt.tight_layout()
    
     #if boa == 'before':
@@ -171,8 +166,6 @@ def plot_histograms_with_noise(df, ship_id, op_index, section, str_op_type):
         #plt.savefig(f"D:\\bwms\\pract\\noise\\after\\{reg}_{idx}_{str_op_type}.png", dpi=300, bbox_inches='tight')
     #plt.show()
   
-
-
 def plot_bar_with_operation(original_data,ship_id, op_index, section, op_type):
 
     # 전체 데이터 합산
@@ -229,7 +222,6 @@ def plot_bar_with_operation(original_data,ship_id, op_index, section, op_type):
     plt.close('all')  # 메모리 해제
     #plt.show()
     
-
 def plot_pie_with_duplication(original_data, ship_id, op_index, section, op_type):
 
     # 결측치 비율 계산
@@ -269,8 +261,6 @@ def plot_pie_with_duplication(original_data, ship_id, op_index, section, op_type
     plt.close('all')  # 메모리 해제
     #plt.show()
     
-
-
 def plot_double_bar_with_missing(original_data, ship_id, op_index, section, op_type): 
 
     # 각 변수의 총 카운트와 결측치 수 계산

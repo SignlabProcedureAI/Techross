@@ -121,7 +121,7 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         
         # 다중 인덱스 컬럼 → 단일 레벨 평탄화
         self.group.columns = ['_'.join(col) for col in self.group.columns]
-        self.group.columns = [
+        self.group.columns = ['SHIP_ID','OP_INDEX','SECTION',
                             'CSU','STS','FTS','FMU','CURRENT','TRO_MIN','TRO_MEAN','TRO_MAX','TRO_DIFF_MIN','TRO_DIFF_MEAN',
                             'TRO_DIFF_MAX','TRO_PRED','PEAK_VALLEY_INDICES_SUM','CROSS_CORRELATION','RE_CROSS_CORRELATION','PRED_DIFF',
                             'TRO_NEG_COUNT','STEEP_LABEL','SLOWLY_LABEL','OUT_OF_WATER_STEEP','HUNTING','TIME_OFFSET'
@@ -142,7 +142,7 @@ class TROFaultAlgorithm(BaseFaultAlgorithm):
         load_database('ecs_test','test_tc_ai_fault_group_v1.1.0', '200', self.group)
 
         self.predict_stats_val()
-        self.group = self.catorize_health_score(self.group)
+        self.catorize_health_score()
         # load_database('signlab','tc_ai_fault_model_group', 'release', self.group)
         load_database('ecs_test','test_tc_ai_fault_model_group', '200', self.group)
 

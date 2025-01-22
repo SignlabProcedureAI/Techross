@@ -50,10 +50,10 @@ class ModelCurrentystemHealth(BaseCurrentSystemHealth):
         self.predict_stats_val()
         self.group = self.group[
             [
-                'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME'
+                'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','ELECTRODE_EFFICIENCY','PRED','START_TIME','END_TIME','RUNNING_TIME'
             ]
             ]
-        self.group = self.catorize_health_score()
+        self.catorize_health_score()
         self.group = self.group.rename({'ELECTRODE_EFFICIENCY':'ACTUAL'}, axis=1)
         self.group['ACTUAL'] = np.round(self.group['ACTUAL'],2)
         self.group['PRED'] = np.round(self.group['PRED'],2)
@@ -83,7 +83,7 @@ class ModelCurrentystemHealth(BaseCurrentSystemHealth):
         Returns :
           오퍼레이션 실시간 건강도 데이터 자동적재, 오퍼레이션 건강도 그룹 자동적재
         """
-        self.refine_frames(self.data)
+        self.refine_frames()
         self.calculate_generalization_value()
         self.calculate_minus_value()
 

@@ -9,7 +9,7 @@ class ModelHunting(BaseHunting):
         """
         ModelHunting 전용 변화율 계산
         """
-        return RateChangeProcessor.calculating_rate_change(df, 'TRO')
+        return RateChangeProcessor.calculate_rate_change(df, 'TRO')
     
     @staticmethod
     def add_custom_logic(df: pd.DataFrame) -> pd.DataFrame:

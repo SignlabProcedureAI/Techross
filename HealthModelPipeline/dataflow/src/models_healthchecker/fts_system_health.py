@@ -14,7 +14,7 @@ from .rate_change_manager import RateChangeProcessor
 from base import BaseFtsSystemHealth
 
 class ModelFtsSystemHealth(BaseFtsSystemHealth):
-    def __init__(self, data: pd.DataFrame, ship_id: str, instance: str):
+    def __init__(self, data: pd.DataFrame):
         """
         FTS 시스템 건강도를 모델링하는 클래스의 초기화 메서드.
 
@@ -98,7 +98,7 @@ class ModelFtsSystemHealth(BaseFtsSystemHealth):
                'SHIP_ID','OP_INDEX','SECTION','OP_TYPE','HEALTH_SCORE','PRED','START_TIME','END_TIME','RUNNING_TIME'
             ]
             ]
-        self.group = self.catorize_health_score()
+        self.catorize_health_score()
         self.group = self.group.rename({'HEALTH_SCORE':'ACTUAL'}, axis=1)
         self.group['ACTUAL'] = np.round(self.group['ACTUAL'],2)
         self.group['PRED'] = np.round(self.group['PRED'],2)

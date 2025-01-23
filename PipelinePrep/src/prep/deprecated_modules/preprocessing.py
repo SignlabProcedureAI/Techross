@@ -203,6 +203,8 @@ def remove_quantile_outliers(data,indicator_data,col):
             operation_values_text = f'{col} 센서 : 90% 이상 0.'
             return data, indicator_data, operation_values_text, remove_data 
         
+
+        
         # 오퍼레이션 추출 deballst, ballast 구분 
         
         op_type = data['OP_TYPE'].iloc[0]
@@ -348,6 +350,7 @@ def apply_preprocessing_fuction(ship_id, op_index, section, data):
         
     if removed_outlier_data is None:
         print(" 이상치 제거 후 데이터가 없어, 전처리 결과로 None을 반환합니다.")
+
         return sensor, None, None, None 
     
     organized_data = organize_data(removed_outlier_data)

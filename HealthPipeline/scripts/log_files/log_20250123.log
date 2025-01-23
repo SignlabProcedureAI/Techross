@@ -1,0 +1,116 @@
+2025-01-23 14:40:50 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 14:40:50 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 14:46:00 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 14:46:00 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:05:30 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:05:31 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:09:51 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:09:52 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:18:18 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:18:18 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:22:24 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:22:24 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:26:32 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:26:32 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:31:02 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:31:02 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:33:00 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:33:00 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:36:49 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:36:49 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:40:44 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:40:44 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:47:32 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:47:33 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:47:33 - INFO - SHIP_ID=T20231107001 | OP_INDEX=327 | SECTION=0 | START_TIME=2024-06-29 09:39:11  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:47:37 - INFO - SHIP_ID=T20231107001 | OP_INDEX=328 | SECTION=0 | START_TIME=2024-06-29 09:39:11  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:47:38 - INFO - SHIP_ID=T20231107001 | OP_INDEX=331 | SECTION=0 | START_TIME=2024-06-29 14:29:38  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:47:39 - INFO - SHIP_ID=T20231107001 | OP_INDEX=332 | SECTION=0 | START_TIME=2024-06-29 14:29:38  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:47:43 - INFO - SHIP_ID=T20231107001 | OP_INDEX=351 | SECTION=0 | START_TIME=2024-07-07 11:08:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:47:44 - INFO - SHIP_ID=T20231107001 | OP_INDEX=353 | SECTION=0 | START_TIME=2024-07-07 15:49:06 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:47:58 - INFO - SHIP_ID=T20231107001 | OP_INDEX=412 | SECTION=0 | START_TIME=2024-07-16 09:57:36  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:47:59 - INFO - SHIP_ID=T20231107001 | OP_INDEX=413 | SECTION=0 | START_TIME=2024-07-16 09:57:36  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:48:05 - INFO - SHIP_ID=T20231108006 | OP_INDEX=10 | SECTION=0 | START_TIME=2024-03-02 04:16:54  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:48:09 - INFO - SHIP_ID=T20231108006 | OP_INDEX=24 | SECTION=0 | START_TIME=2024-03-03 05:57:19 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:48:15 - INFO - SHIP_ID=T20231108006 | OP_INDEX=53 | SECTION=0 | START_TIME=2024-03-07 04:10:16  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:48:16 - INFO - SHIP_ID=T20231108006 | OP_INDEX=56 | SECTION=0 | START_TIME=2024-03-07 20:24:12  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:48:18 - INFO - SHIP_ID=T20231108006 | OP_INDEX=60 | SECTION=0 | START_TIME=2024-03-08 06:09:18  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:48:20 - INFO - SHIP_ID=T20231108006 | OP_INDEX=64 | SECTION=0 | START_TIME=2024-03-08 22:28:49  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True
+2025-01-23 15:48:23 - INFO - SHIP_ID=T20231108006 | OP_INDEX=78 | SECTION=0 | START_TIME=2024-03-27 10:27:53 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:48:24 - INFO - SHIP_ID=T20231108006 | OP_INDEX=83 | SECTION=0 | START_TIME=2024-03-27 16:15:55 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:48:25 - INFO - SHIP_ID=T20231108006 | OP_INDEX=84 | SECTION=0 | START_TIME=2024-03-28 12:53:48 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:48:26 - INFO - SHIP_ID=T20231108006 | OP_INDEX=88 | SECTION=0 | START_TIME=2024-03-29 06:32:34 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:13 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:14 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:19 - INFO - SHIP_ID=T20231107001 | OP_INDEX=351 | SECTION=0 | START_TIME=2024-07-07 11:08:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:20 - INFO - SHIP_ID=T20231107001 | OP_INDEX=353 | SECTION=0 | START_TIME=2024-07-07 15:49:06 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:41 - INFO - SHIP_ID=T20231108006 | OP_INDEX=24 | SECTION=0 | START_TIME=2024-03-03 05:57:19 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:53 - INFO - SHIP_ID=T20231108006 | OP_INDEX=78 | SECTION=0 | START_TIME=2024-03-27 10:27:53 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:54 - INFO - SHIP_ID=T20231108006 | OP_INDEX=83 | SECTION=0 | START_TIME=2024-03-27 16:15:55 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:55 - INFO - SHIP_ID=T20231108006 | OP_INDEX=84 | SECTION=0 | START_TIME=2024-03-28 12:53:48 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:55:56 - INFO - SHIP_ID=T20231108006 | OP_INDEX=88 | SECTION=0 | START_TIME=2024-03-29 06:32:34 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:27 - INFO - SHIP_ID=T20231108006 | OP_INDEX=230 | SECTION=0 | START_TIME=2024-05-21 13:01:34 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:28 - INFO - SHIP_ID=T20231108006 | OP_INDEX=231 | SECTION=0 | START_TIME=2024-05-21 19:36:27 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:28 - INFO - SHIP_ID=T20231108006 | OP_INDEX=232 | SECTION=0 | START_TIME=2024-05-22 04:15:18 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:30 - INFO - SHIP_ID=T20231108006 | OP_INDEX=239 | SECTION=0 | START_TIME=2024-05-22 15:16:12 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:41 - INFO - SHIP_ID=T20231108006 | OP_INDEX=291 | SECTION=0 | START_TIME=2024-06-20 01:19:41 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:41 - INFO - SHIP_ID=T20231108006 | OP_INDEX=292 | SECTION=0 | START_TIME=2024-06-20 13:44:31 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:42 - INFO - SHIP_ID=T20231108006 | OP_INDEX=293 | SECTION=0 | START_TIME=2024-06-20 20:10:41 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:42 - INFO - SHIP_ID=T20231108006 | OP_INDEX=294 | SECTION=0 | START_TIME=2024-06-21 04:19:44 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:51 - INFO - SHIP_ID=T20231108006 | OP_INDEX=335 | SECTION=0 | START_TIME=2024-07-20 21:44:41 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:55 - INFO - SHIP_ID=T20231108006 | OP_INDEX=351 | SECTION=0 | START_TIME=2024-07-22 08:44:19 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:56:58 - INFO - SHIP_ID=T20231108006 | OP_INDEX=363 | SECTION=0 | START_TIME=2024-07-27 06:14:55 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:57:26 - INFO - SHIP_ID=T20231226001 | OP_INDEX=242 | SECTION=0 | START_TIME=2024-07-23 03:31:53 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:57:27 - INFO - SHIP_ID=T20231226001 | OP_INDEX=243 | SECTION=0 | START_TIME=2024-07-23 03:34:44 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:57:27 - INFO - SHIP_ID=T20231226001 | OP_INDEX=244 | SECTION=0 | START_TIME=2024-07-23 12:43:59 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 15:57:27 - INFO - SHIP_ID=T20231226001 | OP_INDEX=245 | SECTION=0 | START_TIME=2024-07-23 12:43:59 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:06:19 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:06:19 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:14:58 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:14:58 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:20:40 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:20:41 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:25:29 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:25:29 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:27:54 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:28:16 - ERROR - Exception during reset or similar
+Traceback (most recent call last):
+  File "C:\Users\pc021\dx_project\HealthPipeline\health_env\lib\site-packages\pymysql\connections.py", line 782, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\pc021\.pyenv\pyenv-win\versions\3.8.10\lib\socket.py", line 669, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] 연결된 구성원으로부터 응답이 없어 연결하지 못했거나, 호스트로부터 응답이 없어 연결이 끊어졌습니다
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\pc021\dx_project\HealthPipeline\health_env\lib\site-packages\sqlalchemy\pool\base.py", line 763, in _finalize_fairy
+    fairy._reset(pool, transaction_was_reset)
+  File "C:\Users\pc021\dx_project\HealthPipeline\health_env\lib\site-packages\sqlalchemy\pool\base.py", line 1038, in _reset
+    pool._dialect.do_rollback(self)
+  File "C:\Users\pc021\dx_project\HealthPipeline\health_env\lib\site-packages\sqlalchemy\engine\default.py", line 683, in do_rollback
+    dbapi_connection.rollback()
+  File "C:\Users\pc021\dx_project\HealthPipeline\health_env\lib\site-packages\pymysql\connections.py", line 493, in rollback
+    self._read_ok_packet()
+  File "C:\Users\pc021\dx_project\HealthPipeline\health_env\lib\site-packages\pymysql\connections.py", line 453, in _read_ok_packet
+    pkt = self._read_packet()
+  File "C:\Users\pc021\dx_project\HealthPipeline\health_env\lib\site-packages\pymysql\connections.py", line 744, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\Users\pc021\dx_project\HealthPipeline\health_env\lib\site-packages\pymysql\connections.py", line 788, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] 연결된 구성원으로부터 응답이 없어 연결하지 못했거나, 호스트로부터 응답이 없어 연결이 끊어졌습니다)')
+2025-01-23 16:28:16 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:31:36 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:31:37 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:34:31 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:34:31 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:37:49 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:37:49 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:40:05 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:40:05 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:42:17 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:42:17 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:44:21 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:44:22 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:48:15 - INFO - SHIP_ID=T20231107001 | OP_INDEX=324 | SECTION=0 | START_TIME=2024-06-21 08:54:57 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False
+2025-01-23 16:48:15 - INFO - SHIP_ID=T20231107001 | OP_INDEX=325 | SECTION=0 | START_TIME=2024-06-21 11:40:00 | LOG_ENTRY=The op_type is deballast | TYPE=preprocessing | IS_PROCESSED=False

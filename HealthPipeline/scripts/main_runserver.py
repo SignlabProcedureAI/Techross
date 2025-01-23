@@ -28,7 +28,7 @@ add_paths(paths)
 # module.healthchecker
 from stat_healthchecker import apply_system_health_algorithms_with_total
 from models_healthchecker import apply_system_health_learning_algorithms_with_total
-from prep.load_processing import distribute_by_application
+from prep.load_processing import DataPreprocessor
 
 # module.dataline 
 from stat_dataline import logger
@@ -75,21 +75,21 @@ def schedule_health_assessment():
         if (data_len>=160) :
 
             print(f'SHIP_ID : {ship_id} / OP_INDEX : {op_index} / SECTION : {section} -  조건 통과')
+            preprocessor = DataPreprocessor(db_target='ecs_test', db_source=('ecs_data_new','ecs_optime_new'), base_path='D:\\bwms_test\\')
+            sensor, preprocessed = preprocessor.distribute_by_application(ship_id=ship_id, op_index=op_index, section=section)
+            # if sensor is None and preprocessed is None:
+            #     print("선박 데이터 프레임이 존재하지 않습니다.")
+            #     continue
 
-            sensor, preprocessed = distribute_by_application(ship_id=ship_id, op_index=op_index, section=section)
-            if sensor is None and preprocessed is None:
-                print("선박 데이터 프레임이 존재하지 않습니다.")
-                continue
-
-            elif preprocessed is not None:
-                logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=The results were derived from the model and statistics package | TYPE=all | IS_PROCESSED=True')
-                print("전처리 후 학습 데이터 프레임이 존재합니다.")
-                apply_system_health_algorithms_with_total(sensor, ship_id)
-                apply_system_health_learning_algorithms_with_total(data=preprocessed, ship_id=ship_id)
-            else:
-                logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time}  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True')
-                print("전처리 후 모델 데이터 프레임이 존재하지 않아 통계 알고리즘 단독 진행합니다.")
-                apply_system_health_algorithms_with_total(data=sensor, ship_id=ship_id)
+            # elif preprocessed is not None:
+            #     logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time} | LOG_ENTRY=The results were derived from the model and statistics package | TYPE=all | IS_PROCESSED=True')
+            #     print("전처리 후 학습 데이터 프레임이 존재합니다.")
+            #     apply_system_health_algorithms_with_total(sensor, ship_id)
+            #     apply_system_health_learning_algorithms_with_total(data=preprocessed, ship_id=ship_id)
+            # else:
+            #     logger.info(f'SHIP_ID={ship_id} | OP_INDEX={op_index} | SECTION={section} | START_TIME={date_time}  | LOG_ENTRY=After preprocessing, the model data frame does not exist, so only the statistical algorithm proceeds alone | TYPE=stats | IS_PROCESSED=True')
+            #     print("전처리 후 모델 데이터 프레임이 존재하지 않아 통계 알고리즘 단독 진행합니다.")
+            #     apply_system_health_algorithms_with_total(data=sensor, ship_id=ship_id)
 
         #     try:
         #         sensor, preprocessed = distribute_by_application(ship_id=ship_id, op_index=op_index, section=section)
